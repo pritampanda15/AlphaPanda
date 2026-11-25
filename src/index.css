@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* Apple Light Studio Palette */
+    --bg-canvas: #f5f5f7;
+    --bg-elevated: rgba(255, 255, 255, 0.78);
+    --bg-elevated-solid: #ffffff;
+    --bg-subtle: rgba(15, 23, 42, 0.04);
+    --border-hairline: rgba(15, 23, 42, 0.085);
+    --border-strong: rgba(15, 23, 42, 0.16);
+    --text-primary: #1d1d1f;
+    --text-secondary: #515154;
+    --text-tertiary: #86868b;
+    --accent-blue: #0071e3;
+    --accent-indigo: #5856d6;
+    --accent-teal: #0ea5e9;
+    --accent-green: #248a3d;
+    --accent-amber: #b25000;
+    --accent-red: #d70015;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -12px rgba(0, 0, 0, 0.08);
+    --shadow-glow: 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  }
+
+  .dark {
+    /* Apple Pro Dark Studio Palette */
+    --bg-canvas: #06070b;
+    --bg-elevated: rgba(22, 24, 33, 0.72);
+    --bg-elevated-solid: #11131a;
+    --bg-subtle: rgba(255, 255, 255, 0.045);
+    --border-hairline: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.18);
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --text-tertiary: #6e6e73;
+    --accent-blue: #0a84ff;
+    --accent-indigo: #5e5ce6;
+    --accent-teal: #64d2ff;
+    --accent-green: #30d158;
+    --accent-amber: #ffd60a;
+    --accent-red: #ff453a;
+    --shadow-card: 0 1px 1px rgba(0, 0, 0, 0.35), 0 24px 48px -20px rgba(0, 0, 0, 0.72);
+    --shadow-glow: 0 1px 0 rgba(255, 255, 255, 0.09) inset;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+}
+
+.font-mono-code {
+  font-family: var(--font-mono);
+}
+
+.tabular-nums-strict {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Apple Frosted Glass Surface */
+.apple-glass {
+  background: var(--bg-elevated);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+}
+
+.apple-glass-subtle {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-hairline);
+}
+
+.apple-button-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-blue) 92%, white 12%), var(--accent-blue));
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.28) inset, 0 8px 20px -8px color-mix(in srgb, var(--accent-blue) 65%, transparent);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.apple-button-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-0.5px);
+}
+
+.apple-button-primary:active {
+  transform: scale(0.98);
+}
+
+.apple-button-secondary {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hairline);
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.apple-button-secondary:hover {
+  border-color: var(--border-strong);
+  background: color-mix(in srgb, var(--bg-subtle) 70%, var(--text-primary) 7%);
+}
+
+.apple-button-secondary:active {
+  transform: scale(0.985);
+}
+
+/* Subtle custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-tertiary) 35%, transparent);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-tertiary) 58%, transparent);
+}
+
+@keyframes ambientDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(24px, -16px, 0) scale(1.06);
+  }
+}
+
+.animate-ambient {
+  animation: ambientDrift 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ambient {
+    animation: none;
+  }
+}

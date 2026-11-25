@@ -1,0 +1,37 @@
+{
+  "name": "alphapanda-studio",
+  "version": "1.0.0",
+  "description": "AlphaPanda Studio — Structural Biology & AI Folding Workstation (Academic & Non-Commercial Research Only)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "Pritam Kumar Panda",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "module",
+  "dependencies": {
+    "3dmol": "^3.0.0",
+    "framer-motion": "^14.14.0",
+    "lucide-react": "^1.80.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/react": "^19.3.3",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  },
+  "homepage": "https://pritampanda15.github.io/AlphaPanda/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pritampanda15/AlphaPanda.git"
+  }
+}
