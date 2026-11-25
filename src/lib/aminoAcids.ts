@@ -109,11 +109,12 @@ export function classifyContact(res1: string, res2: string, dist: number): Inter
   const a = AMINO_ACIDS[res1.toUpperCase()];
   const b = AMINO_ACIDS[res2.toUpperCase()];
   if (!a || !b) return 'Polar Contact';
-  if (a.code1 === 'C' && b.code1 === 'C' && dist <= 3.2) return 'Disulfide';
+  // Thresholds calibrated for CB–CB inter-residue distances (CA for Gly)
+  if (a.code1 === 'C' && b.code1 === 'C' && dist <= 4.6) return 'Disulfide';
   if ((a.charge > 0.5 && b.charge < -0.5) || (a.charge < -0.5 && b.charge > 0.5)) {
-    return dist <= 5.5 ? 'Salt Bridge' : 'Polar Contact';
+    return dist <= 8.0 ? 'Salt Bridge' : 'Polar Contact';
   }
-  if (a.group === 'aromatic' && b.group === 'aromatic' && dist <= 6.2) {
+  if (a.group === 'aromatic' && b.group === 'aromatic' && dist <= 7.2) {
     return 'Aromatic π-Stack';
   }
   if (
@@ -125,7 +126,7 @@ export function classifyContact(res1: string, res2: string, dist: number): Inter
   if (
     ['polar', 'positive', 'negative'].includes(a.group) &&
     ['polar', 'positive', 'negative'].includes(b.group) &&
-    dist <= 4.2
+    dist <= 6.5
   ) {
     return 'Hydrogen Bond';
   }

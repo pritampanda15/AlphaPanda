@@ -29,10 +29,11 @@ import {
   downloadSvgAsPng,
   downloadTextFile,
 } from '../../lib/figureExport';
-import { GlassCard, MetricRing, StatusPill, APPLE_EASE } from '../ui/ApplePrimitives';
+import { GlassCard, StatusPill, APPLE_EASE } from '../ui/ApplePrimitives';
 import { Mol3DViewport, type Mol3DHandle } from './Mol3DViewport';
 import { PAEHeatmap } from './PAEHeatmap';
 import { PLDDTTrack } from './PLDDTTrack';
+import { MetricsSegmentationPanel } from './MetricsSegmentationPanel';
 
 interface ConfidenceExplorerProps {
   isDark: boolean;
@@ -123,6 +124,25 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
       return true;
     });
   }, [dataset, cutoff, bondFilter]);
+
+  // Interface Chemistry Composition counts at current distance cutoff
+  const chemistryCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      'Salt Bridge': 0,
+      'Hydrogen Bond': 0,
+      Hydrophobic: 0,
+      'Aromatic π-Stack': 0,
+      'Polar Contact': 0,
+      Disulfide: 0,
+    };
+    if (!dataset) return counts;
+    for (const c of dataset.contacts) {
+      if (c.distance <= cutoff) {
+        counts[c.interactionType] = (counts[c.interactionType] || 0) + 1;
+      }
+    }
+    return counts;
+  }, [dataset, cutoff]);
 
   const handleFiles = async (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
@@ -409,86 +429,8 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
         )}
       </GlassCard>
 
-      {/* Automated Metric Rings (Smartly adapts for Monomer Globular Fold vs Multi-Chain Complex) */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {m.isMonomer ? (
-          <>
-            <MetricRing
-              label="pTM Fold"
-              valueText={m.ptm.toFixed(2)}
-              sublabel="Globular domain score"
-              progress={m.ptm}
-              color="#30D158"
-            />
-            <MetricRing
-              label="Mean pLDDT"
-              valueText={m.meanComplexPlddt.toFixed(1)}
-              sublabel="Local accuracy"
-              progress={m.meanComplexPlddt / 100}
-              color="#0A84FF"
-            />
-            <MetricRing
-              label="Core PAE"
-              valueText={`${m.meanInterfacePae.toFixed(1)}Å`}
-              sublabel={`Min ${m.minInterfacePae.toFixed(1)} Å`}
-              progress={1 - Math.min(1, m.meanInterfacePae / 20)}
-              color="#30D158"
-            />
-            <MetricRing
-              label="Length"
-              valueText={`${dataset.residues.length}`}
-              sublabel="Single globular chain"
-              progress={Math.min(1, dataset.residues.length / 400)}
-              color="#5AC8FA"
-            />
-            <MetricRing
-              label="Core Packs"
-              valueText={String(m.contactCount8A)}
-              sublabel="Long-range (|Δi|≥12)"
-              progress={Math.min(1, m.contactCount8A / 260)}
-              color="#BF5AF2"
-            />
-          </>
-        ) : (
-          <>
-            <MetricRing
-              label="ipTM"
-              valueText={m.iptm.toFixed(2)}
-              sublabel={m.iptm >= 0.75 ? 'High interface fold' : m.iptm >= 0.5 ? 'Moderate fold' : 'Weak interface'}
-              progress={m.iptm}
-              color={m.iptm >= 0.75 ? '#30D158' : m.iptm >= 0.5 ? '#FFD60A' : '#FF453A'}
-            />
-            <MetricRing
-              label="pDockQ"
-              valueText={m.pDockQ.toFixed(2)}
-              sublabel={m.pDockQ >= 0.45 ? 'Acceptable–High' : m.pDockQ >= 0.23 ? 'Borderline' : 'Low docking'}
-              progress={m.pDockQ / 0.75}
-              color={m.pDockQ >= 0.45 ? '#0A84FF' : m.pDockQ >= 0.23 ? '#FF9F0A' : '#FF453A'}
-            />
-            <MetricRing
-              label="Mean i-PAE"
-              valueText={`${m.meanInterfacePae.toFixed(1)}Å`}
-              sublabel={`Min ${m.minInterfacePae.toFixed(1)} Å`}
-              progress={1 - Math.min(1, m.meanInterfacePae / 25)}
-              color={m.meanInterfacePae <= 6.5 ? '#30D158' : m.meanInterfacePae <= 12 ? '#FFD60A' : '#FF453A'}
-            />
-            <MetricRing
-              label="i-pLDDT"
-              valueText={m.meanInterfacePlddt.toFixed(0)}
-              sublabel={`pTM ${m.ptm.toFixed(2)}`}
-              progress={m.meanInterfacePlddt / 100}
-              color="#5AC8FA"
-            />
-            <MetricRing
-              label="Contacts"
-              valueText={String(m.contactCount8A)}
-              sublabel={`${m.interfaceResidueCount} interface aa`}
-              progress={Math.min(1, m.contactCount8A / 65)}
-              color="#BF5AF2"
-            />
-          </>
-        )}
-      </div>
+      {/* Segmented AlphaFold Metrics Dashboard, Diagnostic Gates & Interactive Guide */}
+      <MetricsSegmentationPanel dataset={dataset} />
 
       {/* Synchronized Selection Inspector Strip */}
       <AnimatePresence>
@@ -601,6 +543,49 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
               <option value="Polar Contact">Polar Contact</option>
             </select>
           </div>
+        </div>
+
+        {/* Interactive Interface Chemistry Composition Pills */}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setBondFilter('ALL')}
+            className={`cursor-pointer rounded-full px-3 py-1 text-[11.5px] font-semibold transition-all ${
+              bondFilter === 'ALL'
+                ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)]'
+                : 'apple-button-secondary'
+            }`}
+          >
+            All ({Object.values(chemistryCounts).reduce((a, b) => a + b, 0)})
+          </button>
+          {(
+            [
+              { key: 'Salt Bridge', color: '#FF453A' },
+              { key: 'Hydrogen Bond', color: '#0A84FF' },
+              { key: 'Hydrophobic', color: '#FF9F0A' },
+              { key: 'Aromatic π-Stack', color: '#BF5AF2' },
+              { key: 'Polar Contact', color: '#30D158' },
+            ] as const
+          ).map((item) => {
+            const count = chemistryCounts[item.key] || 0;
+            const active = bondFilter === item.key;
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => setBondFilter(active ? 'ALL' : item.key)}
+                className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1 text-[11.5px] font-medium transition-all ${
+                  active
+                    ? 'bg-sky-500/16 text-sky-500 ring-1 ring-sky-500/40'
+                    : 'apple-button-secondary'
+                }`}
+              >
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                <span>{item.key}</span>
+                <span className="font-mono-code text-[10.5px] opacity-75">{count}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="max-h-[290px] overflow-auto rounded-2xl border border-[var(--border-hairline)]">
