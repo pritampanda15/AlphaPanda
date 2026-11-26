@@ -197,33 +197,33 @@ export default function App() {
 
       <CiteModal open={citeOpen} onClose={() => setCiteOpen(false)} />
 
-      {/* Sticky Apple Frosted-Glass Navigation Bar */}
-      <header className="sticky top-0 z-40 border-b border-[var(--border-hairline)] bg-[var(--bg-elevated)] backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-[1380px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      {/* Floating Apple visionOS Liquid Glass Navigation Dock */}
+      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6 sm:pt-4">
+        <div className="apple-dock mx-auto flex max-w-[1380px] flex-wrap items-center justify-between gap-3 rounded-[26px] px-4 py-2.5 sm:rounded-full sm:px-5">
           {/* Brand Identity */}
           <div className="flex items-center gap-3">
             <AlphaPandaLogo size={34} />
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[16px] font-bold tracking-[-0.03em] text-[var(--text-primary)]">
+                <span className="text-[15.5px] font-bold tracking-[-0.03em] text-[var(--text-primary)]">
                   AlphaPanda
                 </span>
-                <span className="rounded-full bg-[var(--bg-subtle)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-secondary)] ring-1 ring-[var(--border-hairline)]">
+                <span className="rounded-full bg-[var(--bg-subtle)] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.1em] text-[var(--text-secondary)] ring-1 ring-[var(--border-hairline)]">
                   Studio
                 </span>
               </div>
-              <div className="hidden text-[11px] text-[var(--text-tertiary)] sm:block">
-                Structural Biology &amp; AI Folding Workstation
+              <div className="hidden text-[11px] text-[var(--text-tertiary)] lg:block">
+                Structural Biology &amp; AI Folding
               </div>
             </div>
           </div>
 
-          {/* macOS-Style Spring Segmented Module Switcher */}
+          {/* macOS-Style Liquid Glass Spring Segmented Switcher */}
           <nav
             aria-label="AlphaPanda Modules"
             className="order-3 flex w-full items-center justify-center sm:order-2 sm:w-auto"
           >
-            <div className="inline-flex w-full items-center justify-between rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] p-1 sm:w-auto">
+            <div className="inline-flex w-full items-center justify-between rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.18)] sm:w-auto">
               {MODULES.map((mod) => {
                 const active = mod.id === activeTab;
                 return (
@@ -241,7 +241,7 @@ export default function App() {
                       <motion.span
                         layoutId="alphapanda-main-nav"
                         transition={APPLE_SPRING}
-                        className="absolute inset-0 -z-10 rounded-full bg-[var(--bg-elevated-solid)] shadow-sm ring-1 ring-[var(--border-hairline)]"
+                        className="absolute inset-0 -z-10 rounded-full bg-[var(--bg-elevated-solid)] shadow-[0_2px_10px_-2px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.28)] ring-1 ring-[var(--border-hairline)]"
                       />
                     )}
                     {mod.icon}
@@ -303,19 +303,19 @@ export default function App() {
       </header>
 
       {/* Main Content Container */}
-      <main className="mx-auto max-w-[1380px] px-4 pt-6 pb-16 sm:px-6">
-        {/* Compact Apple Keynote Hero Strip */}
-        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+      <main className="mx-auto max-w-[1380px] px-4 pt-7 pb-20 sm:px-6">
+        {/* Refined Editorial Apple Hero Strip */}
+        <div className="mb-7 flex flex-col justify-between gap-3 md:flex-row md:items-end">
           <motion.div
             key={`hero-${activeModule.id}`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: APPLE_EASE }}
+            transition={{ duration: 0.38, ease: APPLE_EASE }}
           >
-            <h1 className="text-[28px] font-bold tracking-[-0.035em] text-[var(--text-primary)] sm:text-[34px]">
+            <h1 className="display-headline text-[30px] font-bold leading-[1.12] sm:text-[38px]">
               {activeModule.title}
             </h1>
-            <p className="mt-1 max-w-3xl text-[14px] leading-relaxed text-[var(--text-secondary)]">
+            <p className="mt-2 max-w-3xl text-[14.5px] leading-relaxed text-[var(--text-secondary)]">
               {activeModule.tagline}
             </p>
           </motion.div>

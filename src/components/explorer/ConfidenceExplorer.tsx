@@ -374,10 +374,10 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
 
   return (
     <div className="space-y-5">
-      {/* Top Bar: Verdict + Static Globular Examples + Live PDB/AFDB Fetch + Drag & Drop */}
-      <GlassCard className="p-4 sm:p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
+      {/* Top Bar: Executive Liquid Glass Control Center */}
+      <GlassCard className="p-5 sm:p-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               <StatusPill tone="blue">
                 <Sparkles className="h-3 w-3" />
@@ -398,10 +398,12 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                 </StatusPill>
               )}
             </div>
-            <h2 className="mt-2 text-[22px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[26px]">
+            <h2 className="mt-2.5 text-[23px] font-bold tracking-[-0.032em] text-[var(--text-primary)] sm:text-[28px]">
               {dataset.name}
             </h2>
-            <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{m.verdictDetail}</p>
+            <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--text-secondary)]">
+              {m.verdictDetail}
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -429,16 +431,16 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
               className="apple-button-secondary inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-medium"
             >
               <Table2 className="h-3.5 w-3.5" />
-              Contacts CSV
+              CSV
             </button>
           </div>
         </div>
 
-        {/* Static Globular Protein Gallery */}
-        <div className="mt-4 border-t border-[var(--border-hairline)] pt-4">
+        {/* Static Globular Protein Glass Dock */}
+        <div className="mt-5 border-t border-[var(--border-hairline)] pt-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-              Static Globular Proteins
+            <span className="mr-1 text-[10.5px] font-bold uppercase tracking-[0.09em] text-[var(--text-tertiary)]">
+              Globular Examples
             </span>
             {STATIC_GLOBULAR_PRESETS.map((p) => {
               const active = p.id === activePresetId;
@@ -447,9 +449,9 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                   key={p.id}
                   type="button"
                   onClick={() => selectStaticPreset(p.id)}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-all ${
+                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-medium transition-all ${
                     active
-                      ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)] shadow-sm'
+                      ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)] shadow-[0_6px_18px_-6px_rgba(0,0,0,0.45)]'
                       : 'apple-button-secondary'
                   }`}
                 >
@@ -462,8 +464,8 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
             })}
           </div>
 
-          {/* Drag-and-Drop + Live PDB / AlphaFold ID Fetch */}
-          <div className="mt-3 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
+          {/* Unified Frosted Input Well: Drag-and-Drop + Live PDB / AlphaFold Fetch */}
+          <div className="mt-3.5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -476,14 +478,14 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                 handleFiles(e.dataTransfer.files);
               }}
               onClick={() => fileInputRef.current?.click()}
-              className={`flex flex-1 cursor-pointer items-center gap-2.5 rounded-2xl border border-dashed px-4 py-2 text-[12px] transition-all ${
+              className={`apple-glass-subtle flex flex-1 cursor-pointer items-center gap-2.5 rounded-full border-dashed px-4 py-2 text-[12px] transition-all ${
                 isDragging
-                  ? 'border-sky-500 bg-sky-500/12 text-sky-400 scale-[1.005]'
-                  : 'border-[var(--border-strong)] bg-[var(--bg-subtle)] text-[var(--text-secondary)] hover:border-sky-500/60 hover:text-[var(--text-primary)]'
+                  ? 'border-sky-500 bg-sky-500/14 text-sky-400 scale-[1.005]'
+                  : 'text-[var(--text-secondary)] hover:border-sky-500/60 hover:text-[var(--text-primary)]'
               }`}
             >
               <Upload className="h-4 w-4 text-sky-500 shrink-0" />
-              <span>
+              <span className="truncate">
                 Drop <strong className="text-[var(--text-primary)]">.cif / .pdb</strong> +{' '}
                 <strong className="text-[var(--text-primary)]">PAE .json</strong> (AlphaFold3 · ColabFold · Boltz-2)
               </span>
@@ -505,7 +507,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                   value={fetchIdInput}
                   onChange={(e) => setFetchIdInput(e.target.value)}
                   placeholder="PDB or UniProt (e.g. 6XI7, O75096)"
-                  className="font-mono-code w-56 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-1.5 pr-3 pl-8 text-[12px] text-[var(--text-primary)] outline-none focus:border-sky-500/60"
+                  className="font-mono-code w-56 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] py-1.5 pr-3 pl-8 text-[12px] text-[var(--text-primary)] outline-none backdrop-blur-md focus:border-sky-500/60"
                 />
               </div>
               <button
@@ -521,8 +523,8 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                 className="apple-button-secondary inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[11.5px] font-medium"
                 title="Download sample .pdb + AlphaFold3 confidence .json to test drag-and-drop"
               >
-                <FileJson className="h-3.5 w-3.5 text-amber-400" />
-                Sample AF3 Files
+                <FileJson className="h-3.5 w-3.5 text-sky-400" />
+                Sample AF3
               </button>
             </form>
           </div>
@@ -655,12 +657,12 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
           </div>
         </div>
 
-        {/* Top Mutagenesis Hotspot Residues (Alanine-Scanning Priority) */}
+        {/* Top Mutagenesis Hotspot Residues (Refined Frosted Glass Well) */}
         {hotspotResidues.length > 0 && (
-          <div className="mb-3.5 rounded-2xl border border-amber-500/20 bg-amber-500/6 p-3">
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold uppercase tracking-[0.06em] text-amber-600 dark:text-amber-300">
-                <Flame className="h-3.5 w-3.5" />
+          <div className="apple-glass-subtle mb-4 rounded-2xl p-3.5">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-primary)]">
+                <Flame className="h-3.5 w-3.5 text-sky-400" />
                 {m.isMonomer
                   ? 'Top Stabilizing Core Residues (Fold Anchors)'
                   : 'Top Interface Hotspots for Mutagenesis (Alanine-Scanning Priority)'}
@@ -675,9 +677,9 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                   key={h.res.index}
                   type="button"
                   onClick={() => setSelectedPair({ a: h.res, b: h.topPartner })}
-                  className="apple-button-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-[11.5px] transition-all hover:border-amber-400/60"
+                  className="apple-button-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-[11.5px] transition-all hover:border-sky-400/55"
                 >
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-bold text-amber-600 dark:text-amber-300">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500/18 text-[10px] font-bold text-sky-500">
                     {idx + 1}
                   </span>
                   <span className="font-mono-code font-bold text-[var(--text-primary)]">
@@ -687,7 +689,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                   <span className="text-[11px] text-[var(--text-secondary)]">
                     {h.contactCount} contacts · {h.avgPae} Å
                   </span>
-                  <span className="rounded-full bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-tertiary)]">
+                  <span className="rounded-full bg-[var(--bg-well)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-tertiary)]">
                     {h.topType}
                   </span>
                 </button>

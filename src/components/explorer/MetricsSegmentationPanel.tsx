@@ -471,22 +471,22 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
       {/* 3 Segmented Metric Cards (Global/Interface · Alignment/PAE · Local/pLDDT) */}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* SEGMENT 1: Global & Interface Reliability */}
-        <GlassCard className="flex flex-col gap-3 p-4 sm:p-5">
+        <GlassCard className="flex flex-col gap-3.5 p-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-sky-500/14 text-sky-500">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-sky-500/14 text-sky-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                 <Layers className="h-4 w-4" />
               </span>
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.07em] text-sky-500">
+                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-sky-400">
                   Segment 1 · {m.isMonomer ? 'Global Fold' : 'Interface Fold'}
                 </div>
-                <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">
+                <div className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">
                   {m.isMonomer ? 'Overall Tertiary Topology' : 'Complex Assembly Confidence'}
                 </div>
               </div>
             </div>
-            <span className="font-mono-code rounded-full bg-[var(--bg-subtle)] px-2.5 py-0.5 text-[10.5px] font-semibold text-[var(--text-secondary)]">
+            <span className="font-mono-code rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] px-2.5 py-0.5 text-[10.5px] font-semibold text-[var(--text-secondary)]">
               Rank {m.rankingScore.toFixed(2)}
             </span>
           </div>
@@ -577,22 +577,22 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
         </GlassCard>
 
         {/* SEGMENT 2: Relative Positioning & PAE Alignment */}
-        <GlassCard className="flex flex-col gap-3 p-4 sm:p-5" delay={0.04}>
+        <GlassCard className="flex flex-col gap-3.5 p-5" delay={0.04}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/14 text-emerald-500">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-emerald-500/14 text-emerald-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                 <Grid2x2 className="h-4 w-4" />
               </span>
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.07em] text-emerald-500">
+                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-emerald-400">
                   Segment 2 · Relative Error (PAE)
                 </div>
-                <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">
+                <div className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">
                   Domain &amp; Interface Positioning
                 </div>
               </div>
             </div>
-            <span className="font-mono-code rounded-full bg-[var(--bg-subtle)] px-2.5 py-0.5 text-[10.5px] font-semibold text-[var(--text-secondary)]">
+            <span className="font-mono-code rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] px-2.5 py-0.5 text-[10.5px] font-semibold text-[var(--text-secondary)]">
               Min {m.minInterfacePae.toFixed(1)} Å
             </span>
           </div>
@@ -673,22 +673,22 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
         </GlassCard>
 
         {/* SEGMENT 3: Local Atomic Confidence (pLDDT Band Segmentation) */}
-        <GlassCard className="flex flex-col gap-3 p-4 sm:p-5" delay={0.08}>
+        <GlassCard className="flex flex-col gap-3.5 p-5" delay={0.08}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-violet-500/14 text-violet-400">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-sky-400/14 text-sky-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                 <Activity className="h-4 w-4" />
               </span>
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.07em] text-violet-400">
+                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-sky-300">
                   Segment 3 · Local Accuracy (pLDDT)
                 </div>
-                <div className="text-[13.5px] font-semibold text-[var(--text-primary)]">
+                <div className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">
                   Per-Residue Confidence Bands
                 </div>
               </div>
             </div>
-            <span className="tabular-nums-strict font-mono-code rounded-full bg-[var(--bg-subtle)] px-2.5 py-0.5 text-[11px] font-bold text-[var(--text-primary)]">
+            <span className="tabular-nums-strict font-mono-code rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] px-2.5 py-0.5 text-[11px] font-bold text-[var(--text-primary)]">
               Mean {m.meanComplexPlddt.toFixed(1)}
             </span>
           </div>

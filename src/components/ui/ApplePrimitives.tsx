@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 
 export const APPLE_SPRING = {
   type: 'spring' as const,
-  stiffness: 380,
+  stiffness: 390,
   damping: 34,
-  mass: 0.85,
+  mass: 0.82,
 };
 
 export const APPLE_EASE = [0.22, 1, 0.36, 1] as const;
@@ -16,24 +16,24 @@ export const AlphaPandaLogo: React.FC<{ size?: number }> = ({ size = 34 }) => (
     height={size}
     viewBox="0 0 64 64"
     fill="none"
-    whileHover={{ scale: 1.05, rotate: -2 }}
+    whileHover={{ scale: 1.06, rotate: -2 }}
     transition={APPLE_SPRING}
-    className="shrink-0 drop-shadow-sm"
+    className="shrink-0 drop-shadow-[0_4px_12px_rgba(10,132,255,0.28)]"
   >
     <defs>
       <linearGradient id="apGrad" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#0A84FF" />
-        <stop offset="52%" stopColor="#5E5CE6" />
+        <stop offset="0%" stopColor="#64D2FF" />
+        <stop offset="50%" stopColor="#0A84FF" />
         <stop offset="100%" stopColor="#30D158" />
       </linearGradient>
     </defs>
-    <rect x="4" y="4" width="56" height="56" rx="16" fill="#0B0D14" />
-    <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="15.25" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" />
-    <circle cx="20" cy="20" r="6" fill="#F5F5F7" />
-    <circle cx="44" cy="20" r="6" fill="#F5F5F7" />
-    <circle cx="32" cy="35" r="16" fill="#F5F5F7" />
-    <ellipse cx="25.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(-14 25.5 33.5)" fill="#0B0D14" />
-    <ellipse cx="38.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(14 38.5 33.5)" fill="#0B0D14" />
+    <rect x="4" y="4" width="56" height="56" rx="16" fill="#0B0F1A" />
+    <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="15.25" stroke="rgba(255,255,255,0.24)" strokeWidth="1.5" />
+    <circle cx="20" cy="20" r="6" fill="#F5F7FB" />
+    <circle cx="44" cy="20" r="6" fill="#F5F7FB" />
+    <circle cx="32" cy="35" r="16" fill="#F5F7FB" />
+    <ellipse cx="25.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(-14 25.5 33.5)" fill="#0B0F1A" />
+    <ellipse cx="38.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(14 38.5 33.5)" fill="#0B0F1A" />
     <circle cx="26.5" cy="32.5" r="1.6" fill="url(#apGrad)" />
     <circle cx="37.5" cy="32.5" r="1.6" fill="url(#apGrad)" />
     <path d="M27 42.5C29.5 45 34.5 45 37 42.5" stroke="url(#apGrad)" strokeWidth="2.8" strokeLinecap="round" />
@@ -46,16 +46,29 @@ interface GlassCardProps {
   delay?: number;
 }
 
-export const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', delay = 0 }) => (
-  <motion.section
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.45, delay, ease: APPLE_EASE }}
-    className={`apple-glass rounded-[22px] ${className}`}
-  >
-    {children}
-  </motion.section>
-);
+/**
+ * Liquid Glass Card with zero-rerender pointer-tracking specular sheen
+ * and crisp physical top-edge highlight.
+ */
+export const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', delay = 0 }) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+    e.currentTarget.style.setProperty('--my', `${e.clientY - rect.top}px`);
+  };
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.44, delay, ease: APPLE_EASE }}
+      onPointerMove={handlePointerMove}
+      className={`apple-glass rounded-[24px] ${className}`}
+    >
+      {children}
+    </motion.section>
+  );
+};
 
 interface MetricRingProps {
   label: string;
@@ -65,9 +78,6 @@ interface MetricRingProps {
   color: string;
 }
 
-/**
- * Apple Watch / Fitness-inspired smooth spring activity ring for structural KPIs
- */
 export const MetricRing: React.FC<MetricRingProps> = ({
   label,
   valueText,
@@ -150,7 +160,7 @@ export function SegmentedControl<T extends string>({
         : 'px-3 py-1.5 text-[12px]';
 
   return (
-    <div className="inline-flex items-center rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] p-1">
+    <div className="inline-flex items-center rounded-full border border-[var(--border-hairline)] bg-[var(--bg-well)] p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.16)] backdrop-blur-xl">
       {options.map((opt) => {
         const active = opt.value === value;
         return (
@@ -168,7 +178,7 @@ export function SegmentedControl<T extends string>({
               <motion.span
                 layoutId={layoutId}
                 transition={APPLE_SPRING}
-                className="absolute inset-0 -z-10 rounded-full bg-[var(--bg-elevated-solid)] shadow-sm ring-1 ring-[var(--border-hairline)]"
+                className="absolute inset-0 -z-10 rounded-full bg-[var(--bg-elevated-solid)] shadow-[0_2px_10px_-2px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.28)] ring-1 ring-[var(--border-hairline)]"
               />
             )}
             {opt.icon}
@@ -186,15 +196,15 @@ export const StatusPill: React.FC<{
   className?: string;
 }> = ({ tone, children, className = '' }) => {
   const styles: Record<string, string> = {
-    emerald: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 ring-emerald-500/25',
+    emerald: 'bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 ring-emerald-500/25',
     amber: 'bg-amber-500/14 text-amber-700 dark:text-amber-300 ring-amber-500/25',
-    rose: 'bg-rose-500/14 text-rose-600 dark:text-rose-400 ring-rose-500/25',
-    blue: 'bg-sky-500/14 text-sky-700 dark:text-sky-300 ring-sky-500/25',
-    slate: 'bg-slate-500/10 text-[var(--text-secondary)] ring-[var(--border-hairline)]',
+    rose: 'bg-rose-500/14 text-rose-700 dark:text-rose-300 ring-rose-500/25',
+    blue: 'bg-sky-500/14 text-sky-700 dark:text-sky-300 ring-sky-500/28',
+    slate: 'bg-[var(--bg-subtle)] text-[var(--text-secondary)] ring-[var(--border-hairline)]',
   };
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold ring-1 ${styles[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold backdrop-blur-md ring-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] ${styles[tone]} ${className}`}
     >
       {children}
     </span>
