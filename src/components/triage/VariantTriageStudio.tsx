@@ -34,19 +34,30 @@ interface VariantTriageStudioProps {
   isDark: boolean;
   requestedPreset?: { uniprotId: string; mutations: string } | null;
   onPresetHandled?: () => void;
+  onStateChange?: (state: { uniprotId: string; mutations: string }) => void;
 }
 
 export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
   isDark,
   requestedPreset,
   onPresetHandled,
+  onStateChange,
 }) => {
-  const [uniprotInput, setUniprotInput] = useState('P04637');
-  const [mutationInput, setMutationInput] = useState('R175H, Y220C, R248Q, R273H, R337H');
-  const [profile, setProfile] = useState<ProteinProfile>(CURATED_PROTEIN_PRESETS.P04637);
+  const [uniprotInput, setUniprotInput] = useState(requestedPreset?.uniprotId || 'P04637');
+  const [mutationInput, setMutationInput] = useState(
+    requestedPreset?.mutations || 'R175H, Y220C, R248Q, R273H, R337H'
+  );
+  const [profile, setProfile] = useState<ProteinProfile>(
+    (requestedPreset?.uniprotId && CURATED_PROTEIN_PRESETS[requestedPreset.uniprotId.toUpperCase()]) ||
+      CURATED_PROTEIN_PRESETS.P04637
+  );
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [focusedMutation, setFocusedMutation] = useState<string | null>(null);
+
+  useEffect(() => {
+    onStateChange?.({ uniprotId: uniprotInput.trim().toUpperCase(), mutations: mutationInput.trim() });
+  }, [uniprotInput, mutationInput]);
 
   // Hydrate static 3D globular PDB whenever a profile with staticPdbPath is active
   useEffect(() => {

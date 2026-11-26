@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <radialGradient id="orb1" cx="25%" cy="15%" r="55%">
+      <stop offset="0%" stop-color="#0A84FF" stop-opacity="0.34" />
+      <stop offset="100%" stop-color="#06070B" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orb2" cx="82%" cy="80%" r="52%">
+      <stop offset="0%" stop-color="#5E5CE6" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#06070B" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orb3" cx="72%" cy="18%" r="40%">
+      <stop offset="0%" stop-color="#30D158" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#06070B" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A84FF" />
+      <stop offset="52%" stop-color="#5E5CE6" />
+      <stop offset="100%" stop-color="#30D158" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#06070B" />
+  <rect width="1200" height="630" fill="url(#orb1)" />
+  <rect width="1200" height="630" fill="url(#orb2)" />
+  <rect width="1200" height="630" fill="url(#orb3)" />
+
+  <!-- Subtle kinetic helix backdrop curve -->
+  <path d="M-20 490 C 160 390, 320 570, 520 460 C 720 350, 920 540, 1220 420" stroke="#0A84FF" stroke-opacity="0.22" stroke-width="2.5" fill="none" />
+  <path d="M-20 440 C 160 540, 320 370, 520 480 C 720 590, 920 390, 1220 500" stroke="#5E5CE6" stroke-opacity="0.22" stroke-width="2.5" fill="none" />
+
+  <!-- Main Glass Frame -->
+  <rect x="52" y="48" width="1096" height="534" rx="34" fill="#11141E" fill-opacity="0.72" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5" />
+
+  <!-- AlphaPanda Monogram -->
+  <g transform="translate(96, 94)">
+    <rect width="68" height="68" rx="18" fill="#0B0D14" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" />
+    <circle cx="21" cy="21" r="6.5" fill="#F5F5F7" />
+    <circle cx="47" cy="21" r="6.5" fill="#F5F5F7" />
+    <circle cx="34" cy="37" r="17" fill="#F5F5F7" />
+    <ellipse cx="27" cy="35.5" rx="4.8" ry="5.8" transform="rotate(-14 27 35.5)" fill="#0B0D14" />
+    <ellipse cx="41" cy="35.5" rx="4.8" ry="5.8" transform="rotate(14 41 35.5)" fill="#0B0D14" />
+    <circle cx="28" cy="34.5" r="1.7" fill="url(#accent)" />
+    <circle cx="40" cy="34.5" r="1.7" fill="url(#accent)" />
+    <path d="M28.5 45C31.2 47.6 36.8 47.6 39.5 45" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" />
+  </g>
+
+  <!-- Brand Header -->
+  <text x="184" y="126" font-family="-apple-system, BlinkMacSystemFont, Inter, sans-serif" font-size="30" font-weight="700" fill="#F5F5F7" letter-spacing="-0.8">AlphaPanda Studio</text>
+  <rect x="478" y="102" width="230" height="30" rx="15" fill="#30D158" fill-opacity="0.14" stroke="#30D158" stroke-opacity="0.32" />
+  <text x="593" y="121.5" text-anchor="middle" font-family="-apple-system, Inter, sans-serif" font-size="13" font-weight="600" fill="#30D158">Academic Research Suite</text>
+  <text x="184" y="152" font-family="-apple-system, Inter, sans-serif" font-size="16" fill="#A1A1A6">100% Client-Side · Zero-Upload Structural Biology &amp; AI Folding Workstation</text>
+
+  <!-- Hero Title -->
+  <text x="96" y="246" font-family="-apple-system, BlinkMacSystemFont, Inter, sans-serif" font-size="52" font-weight="800" fill="#FFFFFF" letter-spacing="-1.6">Explore Folds. Publish MSAs.</text>
+  <text x="96" y="308" font-family="-apple-system, BlinkMacSystemFont, Inter, sans-serif" font-size="52" font-weight="800" fill="url(#accent)" letter-spacing="-1.6">Triage Variants in 3D.</text>
+
+  <!-- 3 Module Cards -->
+  <g transform="translate(96, 354)">
+    <rect width="318" height="172" rx="22" fill="#FFFFFF" fill-opacity="0.045" stroke="#FFFFFF" stroke-opacity="0.10" />
+    <rect x="20" y="20" width="112" height="24" rx="12" fill="#0A84FF" fill-opacity="0.18" />
+    <text x="76" y="36" text-anchor="middle" font-family="-apple-system, Inter, sans-serif" font-size="11.5" font-weight="700" fill="#64D2FF">AF3 · BOLTZ-2</text>
+    <text x="20" y="74" font-family="-apple-system, Inter, sans-serif" font-size="19" font-weight="700" fill="#F5F5F7">Confidence &amp; Interface</text>
+    <text x="20" y="102" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">Synchronized 3D viewer, PAE</text>
+    <text x="20" y="122" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">heatmap, pLDDT, ipTM, pDockQ</text>
+    <text x="20" y="142" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">&amp; one-click SVG/PNG figures.</text>
+  </g>
+
+  <g transform="translate(441, 354)">
+    <rect width="318" height="172" rx="22" fill="#FFFFFF" fill-opacity="0.045" stroke="#FFFFFF" stroke-opacity="0.10" />
+    <rect x="20" y="20" width="128" height="24" rx="12" fill="#5E5CE6" fill-opacity="0.22" />
+    <text x="84" y="36" text-anchor="middle" font-family="-apple-system, Inter, sans-serif" font-size="11.5" font-weight="700" fill="#C4B5FD">VECTOR SVG</text>
+    <text x="20" y="74" font-family="-apple-system, Inter, sans-serif" font-size="19" font-weight="700" fill="#F5F5F7">MSA Publisher</text>
+    <text x="20" y="102" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">Editable α-helix/β-strand overlay,</text>
+    <text x="20" y="122" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">WebLogo bits, motif regex,</text>
+    <text x="20" y="142" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">mutation pins &amp; ESPript modes.</text>
+  </g>
+
+  <g transform="translate(786, 354)">
+    <rect width="318" height="172" rx="22" fill="#FFFFFF" fill-opacity="0.045" stroke="#FFFFFF" stroke-opacity="0.10" />
+    <rect x="20" y="20" width="136" height="24" rx="12" fill="#30D158" fill-opacity="0.18" />
+    <text x="88" y="36" text-anchor="middle" font-family="-apple-system, Inter, sans-serif" font-size="11.5" font-weight="700" fill="#86EFAC">UNIPROT · AFDB</text>
+    <text x="20" y="74" font-family="-apple-system, Inter, sans-serif" font-size="19" font-weight="700" fill="#F5F5F7">Variant Triage 3D</text>
+    <text x="20" y="102" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">3D mutation spotlight, buried/RSA</text>
+    <text x="20" y="122" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">context, Grantham &amp; BLOSUM62,</text>
+    <text x="20" y="142" font-family="-apple-system, Inter, sans-serif" font-size="13.5" fill="#A1A1A6">ClinVar, gnomAD &amp; PDB links.</text>
+  </g>
+</svg>

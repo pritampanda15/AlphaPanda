@@ -32,6 +32,8 @@ import { GlassCard, SegmentedControl, StatusPill, APPLE_EASE } from '../ui/Apple
 
 interface MSAPublisherProps {
   isDark: boolean;
+  initialPresetId?: string | null;
+  onPresetChange?: (presetId: string) => void;
 }
 
 const COLOR_SCHEMES: Array<{ value: MSAColorScheme; label: string }> = [
@@ -42,14 +44,20 @@ const COLOR_SCHEMES: Array<{ value: MSAColorScheme; label: string }> = [
   { value: 'conservation', label: 'Conservation' },
 ];
 
-export const MSAPublisher: React.FC<MSAPublisherProps> = ({ isDark }) => {
-  const [activePresetId, setActivePresetId] = useState<string>(DEMO_MSA_DATASETS[0].id);
-  const [title, setTitle] = useState(DEMO_MSA_DATASETS[0].title);
-  const [subtitle, setSubtitle] = useState(DEMO_MSA_DATASETS[0].subtitle);
-  const [rawText, setRawText] = useState(DEMO_MSA_DATASETS[0].rawText);
-  const [ssTrack, setSsTrack] = useState(DEMO_MSA_DATASETS[0].secondaryStructure);
-  const [pins, setPins] = useState<MSAMutationPin[]>(DEMO_MSA_DATASETS[0].pins);
-  const [motifRegex, setMotifRegex] = useState(DEMO_MSA_DATASETS[0].motifRegex || '');
+export const MSAPublisher: React.FC<MSAPublisherProps> = ({
+  isDark,
+  initialPresetId,
+  onPresetChange,
+}) => {
+  const initialDemo =
+    DEMO_MSA_DATASETS.find((d) => d.id === initialPresetId) ?? DEMO_MSA_DATASETS[0];
+  const [activePresetId, setActivePresetId] = useState<string>(initialDemo.id);
+  const [title, setTitle] = useState(initialDemo.title);
+  const [subtitle, setSubtitle] = useState(initialDemo.subtitle);
+  const [rawText, setRawText] = useState(initialDemo.rawText);
+  const [ssTrack, setSsTrack] = useState(initialDemo.secondaryStructure);
+  const [pins, setPins] = useState<MSAMutationPin[]>(initialDemo.pins);
+  const [motifRegex, setMotifRegex] = useState(initialDemo.motifRegex || '');
 
   const [scheme, setScheme] = useState<MSAColorScheme>('apple-studio');
   const [showSS, setShowSS] = useState(true);
@@ -147,6 +155,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({ isDark }) => {
     setPins(preset.pins);
     setMotifRegex(preset.motifRegex || '');
     setSelectedCol(null);
+    onPresetChange?.(preset.id);
   };
 
   const handleFileUpload = async (file: File | undefined) => {

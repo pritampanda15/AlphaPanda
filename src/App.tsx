@@ -1,6 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Box, AlignLeft, ShieldCheck, Moon, Sun, Command } from 'lucide-react';
+import {
+  Box,
+  AlignLeft,
+  ShieldCheck,
+  Moon,
+  Sun,
+  Command,
+  Share2,
+  Check,
+  BookMarked,
+} from 'lucide-react';
 import { AmbientHelixMotion } from './components/ui/AmbientHelixMotion';
 import {
   AlphaPandaLogo,
@@ -8,6 +18,7 @@ import {
   APPLE_SPRING,
 } from './components/ui/ApplePrimitives';
 import { CommandPalette } from './components/ui/CommandPalette';
+import { CiteModal } from './components/ui/CiteModal';
 import { ConfidenceExplorer } from './components/explorer/ConfidenceExplorer';
 import { MSAPublisher } from './components/msa/MSAPublisher';
 import { VariantTriageStudio } from './components/triage/VariantTriageStudio';
@@ -27,7 +38,7 @@ const MODULES: Array<{
     shortLabel: 'Confidence & Interface',
     title: 'AlphaFold3 · ColabFold · Boltz-2 Explorer',
     tagline:
-      'Synchronized 3D globular complex viewport, clickable PAE heatmap, pLDDT confidence track, automated pDockQ / ipTM scoring, and one-click publication figure export.',
+      'Synchronized 3D globular complex viewport, clickable PAE heatmap, segmented confidence breakdown, automated pDockQ / ipTM scoring, and one-click publication figure export.',
     accentHue: 'blue',
     icon: <Box className="h-3.5 w-3.5" />,
   },
@@ -51,15 +62,78 @@ const MODULES: Array<{
   },
 ];
 
+function readInitialDeepLink() {
+  if (typeof window === 'undefined') {
+    return { tab: 'explorer' as ModuleId, preset: null, liveId: null, msa: null, triage: null };
+  }
+  const params = new URLSearchParams(window.location.search);
+  const rawTab = params.get('tab');
+  const tab: ModuleId =
+    rawTab === 'msa' || rawTab === 'triage' || rawTab === 'explorer' ? rawTab : 'explorer';
+  const preset = params.get('preset');
+  const liveId = params.get('id');
+  const msa = params.get('msa');
+  const uniprot = params.get('uniprot');
+  const muts = params.get('muts');
+  const triage = uniprot ? { uniprotId: uniprot, mutations: muts || 'R175H, Y220C' } : null;
+  return { tab, preset, liveId, msa, triage };
+}
+
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ModuleId>('explorer');
+  const initial = useRef(readInitialDeepLink()).current;
+
+  const [activeTab, setActiveTab] = useState<ModuleId>(initial.tab);
   const [isDark, setIsDark] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [requestedStructPreset, setRequestedStructPreset] = useState<string | null>(null);
+  const [citeOpen, setCiteOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const [requestedStructPreset, setRequestedStructPreset] = useState<string | null>(initial.preset);
+  const [requestedLiveId, setRequestedLiveId] = useState<string | null>(initial.liveId);
   const [requestedTriagePreset, setRequestedTriagePreset] = useState<{
     uniprotId: string;
     mutations: string;
-  } | null>(null);
+  } | null>(initial.triage);
+
+  // Track current view state for shareable URL query sync
+  const deepStateRef = useRef<{
+    explorerPreset?: string;
+    explorerLiveId?: string;
+    msaPreset?: string;
+    triageUniprot?: string;
+    triageMuts?: string;
+  }>({
+    explorerPreset: initial.preset || 'kras-raf1-complex',
+    explorerLiveId: initial.liveId || undefined,
+    msaPreset: initial.msa || 'lrp4-propeller',
+    triageUniprot: initial.triage?.uniprotId || 'P04637',
+    triageMuts: initial.triage?.mutations || 'R175H, Y220C, R248Q, R273H, R337H',
+  });
+
+  const syncUrl = useCallback((tab: ModuleId) => {
+    const params = new URLSearchParams();
+    params.set('tab', tab);
+    if (tab === 'explorer') {
+      if (deepStateRef.current.explorerLiveId) {
+        params.set('id', deepStateRef.current.explorerLiveId);
+      } else if (deepStateRef.current.explorerPreset) {
+        params.set('preset', deepStateRef.current.explorerPreset);
+      }
+    } else if (tab === 'msa' && deepStateRef.current.msaPreset) {
+      params.set('msa', deepStateRef.current.msaPreset);
+    } else if (tab === 'triage' && deepStateRef.current.triageUniprot) {
+      params.set('uniprot', deepStateRef.current.triageUniprot);
+      if (deepStateRef.current.triageMuts) {
+        params.set('muts', deepStateRef.current.triageMuts.replace(/\s+/g, ''));
+      }
+    }
+    const nextUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState({}, '', nextUrl);
+  }, []);
+
+  useEffect(() => {
+    syncUrl(activeTab);
+  }, [activeTab, syncUrl]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -79,6 +153,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  const handleCopyShareLink = async () => {
+    syncUrl(activeTab);
+    await navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 1800);
+  };
+
   const activeModule = MODULES.find((m) => m.id === activeTab) ?? MODULES[0];
 
   return (
@@ -90,12 +171,18 @@ export default function App() {
         onClose={() => setPaletteOpen(false)}
         isDark={isDark}
         onToggleTheme={() => setIsDark((d) => !d)}
+        onOpenCite={() => setCiteOpen(true)}
         onSwitchTab={setActiveTab}
-        onLoadStructurePreset={(id) => setRequestedStructPreset(id)}
+        onLoadStructurePreset={(id) => {
+          setRequestedLiveId(null);
+          setRequestedStructPreset(id);
+        }}
         onLoadTriagePreset={(uniprotId, mutations) =>
           setRequestedTriagePreset({ uniprotId, mutations })
         }
       />
+
+      <CiteModal open={citeOpen} onClose={() => setCiteOpen(false)} />
 
       {/* Sticky Apple Frosted-Glass Navigation Bar */}
       <header className="sticky top-0 z-40 border-b border-[var(--border-hairline)] bg-[var(--bg-elevated)] backdrop-blur-2xl">
@@ -152,20 +239,44 @@ export default function App() {
             </div>
           </nav>
 
-          {/* Right Controls: Spotlight ⌘K + Theme Toggle */}
-          <div className="order-2 flex items-center gap-2 sm:order-3">
+          {/* Right Controls: Share Deep Link + Cite + Spotlight ⌘K + Theme Toggle */}
+          <div className="order-2 flex items-center gap-1.5 sm:order-3">
+            <button
+              type="button"
+              onClick={handleCopyShareLink}
+              className="apple-button-secondary inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)]"
+              title="Copy shareable link to this exact view"
+            >
+              {copiedLink ? (
+                <Check className="h-3.5 w-3.5 text-emerald-500" />
+              ) : (
+                <Share2 className="h-3.5 w-3.5 text-sky-500" />
+              )}
+              <span className="hidden md:inline">{copiedLink ? 'Copied' : 'Share'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setCiteOpen(true)}
+              className="apple-button-secondary hidden cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] md:inline-flex"
+              title="Cite AlphaPanda Studio (BibTeX & Methods)"
+            >
+              <BookMarked className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Cite</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setPaletteOpen(true)}
-              className="apple-button-secondary hidden cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] lg:inline-flex"
+              className="apple-button-secondary hidden cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] xl:inline-flex"
               title="Open Spotlight Quick Switcher (⌘K)"
             >
               <Command className="h-3.5 w-3.5 text-sky-500" />
-              <span>Quick Jump</span>
               <kbd className="font-mono-code rounded bg-black/8 px-1.5 py-0.5 text-[10px] text-[var(--text-tertiary)] dark:bg-white/10">
                 ⌘K
               </kbd>
             </button>
+
             <button
               type="button"
               onClick={() => setIsDark((d) => !d)}
@@ -210,15 +321,38 @@ export default function App() {
               <ConfidenceExplorer
                 isDark={isDark}
                 requestedPresetId={requestedStructPreset}
-                onPresetHandled={() => setRequestedStructPreset(null)}
+                requestedLiveId={requestedLiveId}
+                onPresetHandled={() => {
+                  setRequestedStructPreset(null);
+                  setRequestedLiveId(null);
+                }}
+                onStateChange={({ preset, liveId }) => {
+                  deepStateRef.current.explorerPreset = preset;
+                  deepStateRef.current.explorerLiveId = liveId;
+                  syncUrl('explorer');
+                }}
               />
             )}
-            {activeTab === 'msa' && <MSAPublisher isDark={isDark} />}
+            {activeTab === 'msa' && (
+              <MSAPublisher
+                isDark={isDark}
+                initialPresetId={initial.msa}
+                onPresetChange={(presetId) => {
+                  deepStateRef.current.msaPreset = presetId;
+                  syncUrl('msa');
+                }}
+              />
+            )}
             {activeTab === 'triage' && (
               <VariantTriageStudio
                 isDark={isDark}
                 requestedPreset={requestedTriagePreset}
                 onPresetHandled={() => setRequestedTriagePreset(null)}
+                onStateChange={({ uniprotId, mutations }) => {
+                  deepStateRef.current.triageUniprot = uniprotId;
+                  deepStateRef.current.triageMuts = mutations;
+                  syncUrl('triage');
+                }}
               />
             )}
           </motion.div>
@@ -232,8 +366,16 @@ export default function App() {
             <strong className="font-semibold text-[var(--text-secondary)]">AlphaPanda Studio</strong> ·
             Academic &amp; Non-Commercial Research Use Only · Not for Clinical Diagnosis
           </span>
-          <span>
-            100% Client-Side · Press ⌘K for Spotlight · Static PDB globular folds + Live UniProt &amp; AlphaFold DB
+          <span className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setCiteOpen(true)}
+              className="cursor-pointer font-semibold text-sky-500 hover:underline"
+            >
+              Cite &amp; Methods
+            </button>
+            <span>·</span>
+            <span>100% Client-Side · Press ⌘K for Spotlight</span>
           </span>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Box, AlignLeft, ShieldCheck, Moon, Sun, CornerDownLeft } from 'lucide-react';
+import { Search, Box, AlignLeft, ShieldCheck, Moon, Sun, CornerDownLeft, BookMarked } from 'lucide-react';
 import { STATIC_GLOBULAR_PRESETS } from '../../lib/structureParser';
 import { TRIAGE_PRESET_QUERIES } from '../../lib/variantTriage';
 import { APPLE_SPRING } from './ApplePrimitives';
@@ -19,6 +19,7 @@ interface CommandPaletteProps {
   onClose: () => void;
   isDark: boolean;
   onToggleTheme: () => void;
+  onOpenCite: () => void;
   onSwitchTab: (tab: 'explorer' | 'msa' | 'triage') => void;
   onLoadStructurePreset: (presetId: string) => void;
   onLoadTriagePreset: (uniprotId: string, mutations: string) => void;
@@ -29,6 +30,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onClose,
   isDark,
   onToggleTheme,
+  onOpenCite,
   onSwitchTab,
   onLoadStructurePreset,
   onLoadTriagePreset,
@@ -85,6 +87,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         },
       })),
       {
+        id: 'open-cite',
+        group: 'Studio',
+        label: 'Cite AlphaPanda Studio (BibTeX & Methods)',
+        sublabel: 'Copy academic citation or publication Methods paragraph',
+        icon: <BookMarked className="h-4 w-4 text-sky-400" />,
+        run: () => onOpenCite(),
+      },
+      {
         id: 'toggle-theme',
         group: 'Studio',
         label: isDark ? 'Switch to Apple Light Studio' : 'Switch to Apple Dark Studio',
@@ -94,7 +104,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       },
     ];
     return list;
-  }, [isDark, onLoadStructurePreset, onLoadTriagePreset, onSwitchTab, onToggleTheme]);
+  }, [isDark, onLoadStructurePreset, onLoadTriagePreset, onOpenCite, onSwitchTab, onToggleTheme]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

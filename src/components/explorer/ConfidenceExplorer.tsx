@@ -13,6 +13,8 @@ import {
   Loader2,
   Focus,
   X,
+  Flame,
+  FileJson,
 } from 'lucide-react';
 import {
   STATIC_GLOBULAR_PRESETS,
@@ -38,13 +40,17 @@ import { MetricsSegmentationPanel } from './MetricsSegmentationPanel';
 interface ConfidenceExplorerProps {
   isDark: boolean;
   requestedPresetId?: string | null;
+  requestedLiveId?: string | null;
   onPresetHandled?: () => void;
+  onStateChange?: (state: { preset?: string; liveId?: string }) => void;
 }
 
 export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
   isDark,
   requestedPresetId,
+  requestedLiveId,
   onPresetHandled,
+  onStateChange,
 }) => {
   const [dataset, setDataset] = useState<StructureDataset | null>(null);
   const [activePresetId, setActivePresetId] = useState<string>(STATIC_GLOBULAR_PRESETS[0].id);
@@ -59,8 +65,10 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
 
   const molRef = useRef<Mol3DHandle | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const hasInitiatedLoadRef = useRef(false);
 
   const selectStaticPreset = async (presetId: string) => {
+    hasInitiatedLoadRef.current = true;
     setLoadingStruct(true);
     setUploadNotice(null);
     try {
@@ -69,6 +77,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
       setActivePresetId(presetId);
       setBondFilter('ALL');
       setCutoff(8.0);
+      onStateChange?.({ preset: presetId });
       // For KRAS G12D monomer, highlight oncogenic Asp12 by default; otherwise top interface contact
       if (presetId === 'kras-g12d-domain') {
         const asp12 = ds.residues.find((r) => r.resSeq === 12);
@@ -83,28 +92,19 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
     }
   };
 
-  useEffect(() => {
-    selectStaticPreset(STATIC_GLOBULAR_PRESETS[0].id);
-  }, []);
-
-  useEffect(() => {
-    if (requestedPresetId) {
-      selectStaticPreset(requestedPresetId);
-      onPresetHandled?.();
-    }
-  }, [requestedPresetId]);
-
-  const handleFetchById = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fetchIdInput.trim()) return;
+  const fetchByExternalId = async (idToFetch: string) => {
+    const clean = idToFetch.trim();
+    if (!clean) return;
     setLoadingStruct(true);
     setUploadNotice(null);
     try {
-      const ds = await fetchLiveStructureById(fetchIdInput);
+      const ds = await fetchLiveStructureById(clean);
       setDataset(ds);
       setActivePresetId('live-fetch');
+      setFetchIdInput(clean.toUpperCase());
       setBondFilter('ALL');
       setCutoff(8.0);
+      onStateChange?.({ liveId: clean.toUpperCase() });
       setSelectedPair(ds.contacts[0] ? { a: ds.contacts[0].resA, b: ds.contacts[0].resB } : null);
       setUploadNotice(
         `Fetched live ${ds.sourceEngine} structure: ${ds.residues.length} aa across ${ds.chains.length} chain(s)`
@@ -114,6 +114,25 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
     } finally {
       setLoadingStruct(false);
     }
+  };
+
+  useEffect(() => {
+    if (requestedLiveId) {
+      hasInitiatedLoadRef.current = true;
+      fetchByExternalId(requestedLiveId);
+      onPresetHandled?.();
+    } else if (requestedPresetId) {
+      hasInitiatedLoadRef.current = true;
+      selectStaticPreset(requestedPresetId);
+      onPresetHandled?.();
+    } else if (!hasInitiatedLoadRef.current && !dataset) {
+      selectStaticPreset(STATIC_GLOBULAR_PRESETS[0].id);
+    }
+  }, [requestedPresetId, requestedLiveId]);
+
+  const handleFetchById = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await fetchByExternalId(fetchIdInput);
   };
 
   const filteredContacts = useMemo(() => {
@@ -219,6 +238,86 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
     } finally {
       setExporting(false);
     }
+  };
+
+  // Top 5 Interface / Core Hotspot Residues ranked for mutagenesis / alanine scanning
+  const hotspotResidues = useMemo(() => {
+    if (!dataset) return [];
+    const map = new Map<
+      number,
+      {
+        res: ParsedResidue;
+        contactCount: number;
+        paeSum: number;
+        topPartner: ParsedResidue;
+        topType: string;
+        hasAnchorBond: boolean;
+      }
+    >();
+
+    for (const c of dataset.contacts) {
+      if (c.distance > cutoff) continue;
+      const isAnchor =
+        c.interactionType === 'Salt Bridge' ||
+        c.interactionType === 'Hydrogen Bond' ||
+        c.interactionType === 'Aromatic π-Stack';
+      const pairs: Array<[ParsedResidue, ParsedResidue]> = [
+        [c.resA, c.resB],
+        [c.resB, c.resA],
+      ];
+      for (const [self, partner] of pairs) {
+        const cur = map.get(self.index);
+        if (!cur) {
+          map.set(self.index, {
+            res: self,
+            contactCount: 1,
+            paeSum: c.meanPae,
+            topPartner: partner,
+            topType: c.interactionType,
+            hasAnchorBond: isAnchor,
+          });
+        } else {
+          cur.contactCount += 1;
+          cur.paeSum += c.meanPae;
+          if (isAnchor) {
+            cur.hasAnchorBond = true;
+            cur.topType = c.interactionType;
+          }
+        }
+      }
+    }
+
+    return Array.from(map.values())
+      .map((entry) => {
+        const avgPae = entry.paeSum / Math.max(1, entry.contactCount);
+        const score =
+          entry.contactCount *
+          (entry.res.plddt / 100) *
+          (1 / Math.max(0.4, avgPae / 5)) *
+          (entry.hasAnchorBond ? 1.35 : 1);
+        return { ...entry, avgPae: Math.round(avgPae * 10) / 10, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
+  }, [dataset, cutoff]);
+
+  const handleDownloadSampleBundle = () => {
+    if (!dataset) return;
+    const sampleJson = JSON.stringify(
+      {
+        source: 'AlphaPanda Sample AlphaFold3-Schema Confidence JSON',
+        iptm: dataset.metrics.isMonomer ? undefined : dataset.metrics.iptm,
+        ptm: dataset.metrics.ptm,
+        ranking_score: dataset.metrics.rankingScore,
+        plddt: dataset.residues.map((r) => r.plddt),
+        pae: dataset.pae,
+      },
+      null,
+      2
+    );
+    downloadTextFile(`${dataset.id}-sample-af3-confidence.json`, sampleJson, 'application/json');
+    downloadTextFile(`${dataset.id}-sample.${dataset.format}`, dataset.rawStructureText, 'text/plain');
+    setUploadNotice('Downloaded sample structure + AlphaFold3-schema confidence JSON for drag-and-drop testing.');
   };
 
   const handleExportCSV = () => {
@@ -396,7 +495,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
               />
             </div>
 
-            <form onSubmit={handleFetchById} className="flex items-center gap-2">
+            <form onSubmit={handleFetchById} className="flex flex-wrap items-center gap-2">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-tertiary)]" />
                 <input
@@ -404,7 +503,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                   value={fetchIdInput}
                   onChange={(e) => setFetchIdInput(e.target.value)}
                   placeholder="PDB or UniProt (e.g. 6XI7, O75096)"
-                  className="font-mono-code w-60 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-1.5 pr-3 pl-8 text-[12px] text-[var(--text-primary)] outline-none focus:border-sky-500/60"
+                  className="font-mono-code w-56 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-1.5 pr-3 pl-8 text-[12px] text-[var(--text-primary)] outline-none focus:border-sky-500/60"
                 />
               </div>
               <button
@@ -413,6 +512,15 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
                 className="apple-button-secondary cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 text-[12px] font-semibold"
               >
                 Fetch 3D
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadSampleBundle}
+                className="apple-button-secondary inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[11.5px] font-medium"
+                title="Download sample .pdb + AlphaFold3 confidence .json to test drag-and-drop"
+              >
+                <FileJson className="h-3.5 w-3.5 text-amber-400" />
+                Sample AF3 Files
               </button>
             </form>
           </div>
@@ -544,6 +652,47 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
             </select>
           </div>
         </div>
+
+        {/* Top Mutagenesis Hotspot Residues (Alanine-Scanning Priority) */}
+        {hotspotResidues.length > 0 && (
+          <div className="mb-3.5 rounded-2xl border border-amber-500/20 bg-amber-500/6 p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 text-[11.5px] font-bold uppercase tracking-[0.06em] text-amber-600 dark:text-amber-300">
+                <Flame className="h-3.5 w-3.5" />
+                {m.isMonomer
+                  ? 'Top Stabilizing Core Residues (Fold Anchors)'
+                  : 'Top Interface Hotspots for Mutagenesis (Alanine-Scanning Priority)'}
+              </span>
+              <span className="text-[11px] text-[var(--text-tertiary)]">
+                Ranked by contact degree × pLDDT × low PAE · Click to focus in 3D
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {hotspotResidues.map((h, idx) => (
+                <button
+                  key={h.res.index}
+                  type="button"
+                  onClick={() => setSelectedPair({ a: h.res, b: h.topPartner })}
+                  className="apple-button-secondary inline-flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-[11.5px] transition-all hover:border-amber-400/60"
+                >
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500/20 text-[10px] font-bold text-amber-600 dark:text-amber-300">
+                    {idx + 1}
+                  </span>
+                  <span className="font-mono-code font-bold text-[var(--text-primary)]">
+                    {h.res.chain}:{h.res.aa}
+                    {h.res.resSeq}
+                  </span>
+                  <span className="text-[11px] text-[var(--text-secondary)]">
+                    {h.contactCount} contacts · {h.avgPae} Å
+                  </span>
+                  <span className="rounded-full bg-[var(--bg-subtle)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-tertiary)]">
+                    {h.topType}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Interactive Interface Chemistry Composition Pills */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
