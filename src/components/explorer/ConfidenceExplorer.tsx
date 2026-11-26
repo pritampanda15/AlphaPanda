@@ -43,6 +43,7 @@ interface ConfidenceExplorerProps {
   requestedLiveId?: string | null;
   onPresetHandled?: () => void;
   onStateChange?: (state: { preset?: string; liveId?: string }) => void;
+  onOpenHowItWorks?: () => void;
 }
 
 export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
@@ -51,6 +52,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
   requestedLiveId,
   onPresetHandled,
   onStateChange,
+  onOpenHowItWorks,
 }) => {
   const [dataset, setDataset] = useState<StructureDataset | null>(null);
   const [activePresetId, setActivePresetId] = useState<string>(STATIC_GLOBULAR_PRESETS[0].id);
@@ -538,7 +540,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
       </GlassCard>
 
       {/* Segmented AlphaFold Metrics Dashboard, Diagnostic Gates & Interactive Guide */}
-      <MetricsSegmentationPanel dataset={dataset} />
+      <MetricsSegmentationPanel dataset={dataset} onOpenHowItWorks={onOpenHowItWorks} />
 
       {/* Synchronized Selection Inspector Strip */}
       <AnimatePresence>

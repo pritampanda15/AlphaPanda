@@ -4,6 +4,7 @@ import {
   Box,
   AlignLeft,
   ShieldCheck,
+  GraduationCap,
   Moon,
   Sun,
   Command,
@@ -22,8 +23,9 @@ import { CiteModal } from './components/ui/CiteModal';
 import { ConfidenceExplorer } from './components/explorer/ConfidenceExplorer';
 import { MSAPublisher } from './components/msa/MSAPublisher';
 import { VariantTriageStudio } from './components/triage/VariantTriageStudio';
+import { HowItWorksStudio } from './components/learn/HowItWorksStudio';
 
-type ModuleId = 'explorer' | 'msa' | 'triage';
+type ModuleId = 'explorer' | 'msa' | 'triage' | 'learn';
 
 const MODULES: Array<{
   id: ModuleId;
@@ -60,6 +62,15 @@ const MODULES: Array<{
     accentHue: 'emerald',
     icon: <ShieldCheck className="h-3.5 w-3.5" />,
   },
+  {
+    id: 'learn',
+    shortLabel: 'How It Works',
+    title: 'How Diffusion & AlphaFold Work — Simply Explained',
+    tagline:
+      'Interactive noise-to-fold diffusion simulator, plain-English 4-step walkthrough of MSA, Pairformer, and all-atom diffusion, plus a quick prediction troubleshooter.',
+    accentHue: 'blue',
+    icon: <GraduationCap className="h-3.5 w-3.5" />,
+  },
 ];
 
 function readInitialDeepLink() {
@@ -69,7 +80,9 @@ function readInitialDeepLink() {
   const params = new URLSearchParams(window.location.search);
   const rawTab = params.get('tab');
   const tab: ModuleId =
-    rawTab === 'msa' || rawTab === 'triage' || rawTab === 'explorer' ? rawTab : 'explorer';
+    rawTab === 'msa' || rawTab === 'triage' || rawTab === 'explorer' || rawTab === 'learn'
+      ? rawTab
+      : 'explorer';
   const preset = params.get('preset');
   const liveId = params.get('id');
   const msa = params.get('msa');
@@ -331,6 +344,7 @@ export default function App() {
                   deepStateRef.current.explorerLiveId = liveId;
                   syncUrl('explorer');
                 }}
+                onOpenHowItWorks={() => setActiveTab('learn')}
               />
             )}
             {activeTab === 'msa' && (
@@ -352,6 +366,16 @@ export default function App() {
                   deepStateRef.current.triageUniprot = uniprotId;
                   deepStateRef.current.triageMuts = mutations;
                   syncUrl('triage');
+                }}
+              />
+            )}
+            {activeTab === 'learn' && (
+              <HowItWorksStudio
+                isDark={isDark}
+                onJumpToExample={(presetId) => {
+                  setRequestedLiveId(null);
+                  setRequestedStructPreset(presetId);
+                  setActiveTab('explorer');
                 }}
               />
             )}

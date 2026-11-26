@@ -591,11 +591,11 @@ export function buildStructureDataset(params: {
       verdictTone = 'amber';
       verdictDetail = `Globular monomer (${residues.length} aa, pTM ${ptm.toFixed(2)}, mean pLDDT ${meanComplexPlddt}) with ${contactCount8A} long-range core contacts; inspect flexible loop segments.`;
     }
-  } else if (iptm >= 0.75 && meanInterfacePae <= 6.5 && pDockQ >= 0.45) {
+  } else if (iptm >= 0.75 && meanInterfacePae <= 6.5 && (pDockQ >= 0.45 || contactCount8A >= 15)) {
     verdict = 'High-Confidence Real Interface';
     verdictTone = 'emerald';
-    verdictDetail = `Strong inter-chain packing (${contactCount8A} CB contacts ≤8 Å), low interface PAE (${meanInterfacePae} Å), and pDockQ ${pDockQ.toFixed(2)} strongly support a native biological binding mode.`;
-  } else if (iptm >= 0.5 && meanInterfacePae <= 11.5 && pDockQ >= 0.23) {
+    verdictDetail = `Strong inter-chain packing (${contactCount8A} CB contacts ≤8 Å), low interface PAE (${meanInterfacePae} Å), and ipTM ${iptm.toFixed(2)} strongly support a native biological binding mode.`;
+  } else if (iptm >= 0.5 && meanInterfacePae <= 11.5 && (pDockQ >= 0.23 || contactCount8A >= 8)) {
     verdict = 'Plausible / Moderate Interface';
     verdictTone = 'amber';
     verdictDetail = `Moderate interface confidence (ipTM ${iptm.toFixed(2)}, iPAE ${meanInterfacePae} Å). Core contacts may be valid, but inspect flexible loops or terminal regions for docking uncertainty.`;

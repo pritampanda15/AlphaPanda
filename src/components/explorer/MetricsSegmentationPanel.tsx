@@ -13,12 +13,14 @@ import {
   Activity,
   ShieldCheck,
   Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import type { StructureDataset } from '../../lib/structureParser';
 import { GlassCard, SegmentedControl, APPLE_EASE } from '../ui/ApplePrimitives';
 
 interface MetricsSegmentationPanelProps {
   dataset: StructureDataset;
+  onOpenHowItWorks?: () => void;
 }
 
 interface ScaleZone {
@@ -77,11 +79,11 @@ const ThresholdMetricRow: React.FC<ThresholdMetricRowProps> = ({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className={`rounded-full px-2 py-0.5 text-[10.5px] font-semibold ${toneClass}`}>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10.5px] font-semibold ${toneClass}`}>
             {statusText}
           </span>
-          <span className="tabular-nums-strict font-mono-code text-[16px] font-bold text-[var(--text-primary)]">
+          <span className="tabular-nums-strict font-mono-code whitespace-nowrap text-[16px] font-bold text-[var(--text-primary)]">
             {valueDisplay}
           </span>
         </div>
@@ -140,10 +142,16 @@ const ThresholdMetricRow: React.FC<ThresholdMetricRowProps> = ({
 };
 
 type GuideTab = 'overview' | 'plddt-vs-pae' | 'interface-scores' | 'pitfalls';
+type LanguageMode = 'simple' | 'expert';
 
-export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> = ({ dataset }) => {
+export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> = ({
+  dataset,
+  onOpenHowItWorks,
+}) => {
   const [guideOpen, setGuideOpen] = useState(false);
   const [guideTab, setGuideTab] = useState<GuideTab>('overview');
+  const [langMode, setLangMode] = useState<LanguageMode>('simple');
+  const isSimple = langMode === 'simple';
 
   const m = dataset.metrics;
   const totalRes = Math.max(1, dataset.residues.length);
@@ -276,30 +284,58 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
 
   return (
     <div className="space-y-4">
-      {/* Header Strip with Toggleable Metrics Explainer */}
+      {/* Header Strip with Plain English / Expert Switch + Toggleable Metrics Explainer */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-1">
         <div>
           <h3 className="text-[15px] font-bold tracking-[-0.02em] text-[var(--text-primary)]">
-            Confidence Metrics Breakdown &amp; Interpretation
+            {isSimple
+              ? 'How Confident Is This AI Structure? (Plain English)'
+              : 'Confidence Metrics Breakdown & Interpretation'}
           </h3>
           <p className="text-[12px] text-[var(--text-tertiary)]">
-            Segmented into Global Fold, Relative Domain Alignment (PAE), and Local Atomic Accuracy (pLDDT) — click any <Info className="inline h-3 w-3" /> icon for formulas
+            {isSimple
+              ? 'Split into 3 plain questions: Overall Fit, Partner Wobble (PAE), and Atom-by-Atom Trust (pLDDT)'
+              : 'Segmented into Global Fold, Relative Domain Alignment (PAE), and Local Atomic Accuracy (pLDDT) — click any (i) icon for formulas'}
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setGuideOpen((v) => !v)}
-          className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-3.5 py-1.5 text-[12px] font-semibold transition-all ${
-            guideOpen
-              ? 'bg-sky-500/15 text-sky-500 ring-1 ring-sky-500/35'
-              : 'apple-button-secondary'
-          }`}
-        >
-          <BookOpen className="h-3.5 w-3.5 text-sky-500" />
-          <span>{guideOpen ? 'Hide Metrics Guide' : 'New to AlphaFold Metrics? Open Guide'}</span>
-          {guideOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <SegmentedControl
+            layoutId="af-lang-mode"
+            size="xs"
+            value={langMode}
+            onChange={setLangMode}
+            options={[
+              { value: 'simple', label: 'Plain English' },
+              { value: 'expert', label: 'Expert' },
+            ]}
+          />
+
+          <button
+            type="button"
+            onClick={() => setGuideOpen((v) => !v)}
+            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all ${
+              guideOpen
+                ? 'bg-sky-500/15 text-sky-500 ring-1 ring-sky-500/35'
+                : 'apple-button-secondary'
+            }`}
+          >
+            <BookOpen className="h-3.5 w-3.5 text-sky-500" />
+            <span>{guideOpen ? 'Hide Guide' : 'Quick Guide'}</span>
+            {guideOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </button>
+
+          {onOpenHowItWorks && (
+            <button
+              type="button"
+              onClick={onOpenHowItWorks}
+              className="apple-button-secondary inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-[12px] font-semibold text-sky-500"
+            >
+              <span>How Diffusion Works</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Expandable Interactive AlphaFold Metrics Guide & Pitfalls Cheat-Sheet */}
@@ -458,7 +494,7 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
           {m.isMonomer ? (
             <>
               <ThresholdMetricRow
-                name="pTM (Predicted TM-score)"
+                name={isSimple ? 'Overall Shape Score (pTM)' : 'pTM (Predicted TM-score)'}
                 valueDisplay={m.ptm.toFixed(2)}
                 statusText={m.ptm >= 0.8 ? 'High Fold' : m.ptm >= 0.55 ? 'Moderate' : 'Uncertain'}
                 statusTone={m.ptm >= 0.8 ? 'emerald' : m.ptm >= 0.55 ? 'amber' : 'rose'}
@@ -469,11 +505,15 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
                   { label: 'Confident Globular Fold (≥0.8)', widthPct: 20, color: '#30D158' },
                 ]}
                 scaleTicks={['0.0', '0.50 (Fold)', '0.80 (High)', '1.0']}
-                plainExplanation="Estimates overall 3D backbone similarity to the true native fold. Scores ≥0.80 confirm an accurate globular domain."
+                plainExplanation={
+                  isSimple
+                    ? 'Did the AI get the big-picture 3D shape right? Scores above 0.80 mean the overall folded architecture is solid.'
+                    : 'Estimates overall 3D backbone similarity to the true native fold. Scores ≥0.80 confirm an accurate globular domain.'
+                }
                 formulaNote="Predicted Template Modeling (TM) score across the full chain. Unlike RMSD, pTM is length-normalized and insensitive to tiny terminal wiggles."
               />
               <ThresholdMetricRow
-                name="Core Tertiary Contacts (|Δi| ≥ 12)"
+                name={isSimple ? 'Internal Packing Anchors' : 'Core Tertiary Contacts (|Δi| ≥ 12)'}
                 valueDisplay={`${m.contactCount8A}`}
                 statusText={m.contactCount8A >= 60 ? 'Compact Core' : m.contactCount8A >= 20 ? 'Moderate' : 'Extended'}
                 statusTone={m.contactCount8A >= 60 ? 'emerald' : m.contactCount8A >= 20 ? 'amber' : 'rose'}
@@ -484,14 +524,18 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
                   { label: 'Compact Globular Core (≥60)', widthPct: 55, color: '#30D158' },
                 ]}
                 scaleTicks={['0', '60', '180', '320+']}
-                plainExplanation="Counts sequence-distant residues packed within 8 Å CB–CB — distinguishing true globular domains from extended coils."
+                plainExplanation={
+                  isSimple
+                    ? 'How many far-apart parts of the sequence fold up and hug each other tightly—proving this is a real compact globe, not a loose noodle.'
+                    : 'Counts sequence-distant residues packed within 8 Å CB–CB — distinguishing true globular domains from extended coils.'
+                }
                 formulaNote="Pairs (i, j) with |resSeq_i − resSeq_j| ≥ 12 and CB–CB distance ≤ 8.0 Å (CA used for Glycine)."
               />
             </>
           ) : (
             <>
               <ThresholdMetricRow
-                name="ipTM (Interface pTM)"
+                name={isSimple ? 'Partner Fit Score (ipTM)' : 'ipTM (Interface pTM)'}
                 valueDisplay={m.iptm.toFixed(2)}
                 statusText={m.iptm >= 0.75 ? 'High Confidence' : m.iptm >= 0.5 ? 'Gray Zone' : 'Low / Artifact'}
                 statusTone={m.iptm >= 0.75 ? 'emerald' : m.iptm >= 0.5 ? 'amber' : 'rose'}
@@ -502,11 +546,15 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
                   { label: 'Confident Interface (≥0.75)', widthPct: 25, color: '#30D158' },
                 ]}
                 scaleTicks={['0.0', '0.50', '0.75 (Target)', '1.0']}
-                plainExplanation="Measures accuracy of how the protein chains pack against each other. Above 0.75 strongly supports a real biological complex."
+                plainExplanation={
+                  isSimple
+                    ? 'Do these two proteins really snap together like this? Above 0.75 means the AI is strongly confident the docking pose is real.'
+                    : 'Measures accuracy of how the protein chains pack against each other. Above 0.75 strongly supports a real biological complex.'
+                }
                 formulaNote={`AlphaFold-Multimer / AF3 / Boltz-2 inter-chain TM score (0–1). Current global pTM is ${m.ptm.toFixed(2)} and composite ranking score (0.8×ipTM + 0.2×pTM) is ${m.rankingScore.toFixed(2)}.`}
               />
               <ThresholdMetricRow
-                name="pDockQ (Interface Docking)"
+                name={isSimple ? 'Docking Trust (pDockQ)' : 'pDockQ (Interface Docking)'}
                 valueDisplay={m.pDockQ.toFixed(2)}
                 statusText={m.pDockQ >= 0.495 ? 'High Accuracy' : m.pDockQ >= 0.23 ? 'Acceptable' : 'Incorrect'}
                 statusTone={m.pDockQ >= 0.495 ? 'emerald' : m.pDockQ >= 0.23 ? 'amber' : 'rose'}
@@ -517,7 +565,11 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
                   { label: 'Medium–High (≥0.50)', widthPct: 34, color: '#30D158' },
                 ]}
                 scaleTicks={['0.0', '0.23 (Min)', '0.50 (High)', '0.74']}
-                plainExplanation="Calibrated docking score combining interface contact count and interface pLDDT — robust even when tails are disordered."
+                plainExplanation={
+                  isSimple
+                    ? 'A second opinion on docking quality based on how many confident atoms touch across the boundary (0.23+ acceptable, 0.50+ strong).'
+                    : 'Calibrated docking score combining interface contact count and interface pLDDT — robust even when tails are disordered.'
+                }
                 formulaNote="Bryant et al. (Nature Comm. 2022): pDockQ = 0.724 / (1 + exp(-0.052 × (i-pLDDT × log10(contacts) − 152.611))) + 0.018."
               />
             </>
@@ -546,7 +598,15 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
           </div>
 
           <ThresholdMetricRow
-            name={m.isMonomer ? 'Mean Core Contact PAE' : 'Mean Interface PAE (i-PAE)'}
+            name={
+              isSimple
+                ? m.isMonomer
+                  ? 'Core Wobble (PAE)'
+                  : 'Packing Wobble (i-PAE)'
+                : m.isMonomer
+                  ? 'Mean Core Contact PAE'
+                  : 'Mean Interface PAE (i-PAE)'
+            }
             valueDisplay={`${m.meanInterfacePae.toFixed(1)} Å`}
             statusText={
               m.meanInterfacePae <= 5.5
@@ -566,7 +626,11 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
               { label: 'Uncertain / Spurious (>12 Å)', widthPct: 52, color: '#FF453A' },
             ]}
             scaleTicks={['0 Å (Best)', '6 Å', '12 Å', '25+ Å (Poor)']}
-            plainExplanation="Average expected distance error (in Ångströms) across contacting residue pairs. Lower is better — under 6 Å means tight locking."
+            plainExplanation={
+              isSimple
+                ? 'Think of this like GPS margin of error between touching residues—lower is better! Under 6 Å means atoms are locked within one amino-acid width.'
+                : 'Average expected distance error (in Ångströms) across contacting residue pairs. Lower is better — under 6 Å means tight locking.'
+            }
             formulaNote="Computed as the mean symmetrized PAE(i,j) & PAE(j,i) across all detected contact pairs ≤8 Å. Unlike global ipTM, i-PAE focuses strictly on the binding patch."
           />
 

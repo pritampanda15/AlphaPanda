@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Box, AlignLeft, ShieldCheck, Moon, Sun, CornerDownLeft, BookMarked } from 'lucide-react';
+import { Search, Box, AlignLeft, ShieldCheck, Moon, Sun, CornerDownLeft, BookMarked, GraduationCap } from 'lucide-react';
 import { STATIC_GLOBULAR_PRESETS } from '../../lib/structureParser';
 import { TRIAGE_PRESET_QUERIES } from '../../lib/variantTriage';
 import { APPLE_SPRING } from './ApplePrimitives';
@@ -20,7 +20,7 @@ interface CommandPaletteProps {
   isDark: boolean;
   onToggleTheme: () => void;
   onOpenCite: () => void;
-  onSwitchTab: (tab: 'explorer' | 'msa' | 'triage') => void;
+  onSwitchTab: (tab: 'explorer' | 'msa' | 'triage' | 'learn') => void;
   onLoadStructurePreset: (presetId: string) => void;
   onLoadTriagePreset: (uniprotId: string, mutations: string) => void;
 }
@@ -63,6 +63,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         sublabel: 'UniProt + AlphaFold 3D RSA, Grantham, ClinVar & gnomAD',
         icon: <ShieldCheck className="h-4 w-4 text-emerald-400" />,
         run: () => onSwitchTab('triage'),
+      },
+      {
+        id: 'nav-learn',
+        group: 'Modules',
+        label: 'How AI Folding & Diffusion Works',
+        sublabel: 'Interactive noise-to-fold diffusion playground & plain-English guide',
+        icon: <GraduationCap className="h-4 w-4 text-amber-400" />,
+        run: () => onSwitchTab('learn'),
       },
       ...STATIC_GLOBULAR_PRESETS.map((p) => ({
         id: `struct-${p.id}`,

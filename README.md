@@ -83,6 +83,17 @@ Rapidly triage missense variants by combining 3D structural exposure, AlphaFold 
 
 ---
 
+### 4. How It Works — Plain-English Diffusion & AlphaFold Primer
+
+An interactive visual classroom designed for students, clinicians, and wet-lab biologists who want crystal-clear intuition without heavy equations:
+
+- **Interactive Diffusion Denoising Playground:** Play or scrub from `100% Random Noise → 0% Folded Protein` across multiple random seeds to see *why* compact globular cores score high `pLDDT` while disordered tails diverge into low-`pLDDT` loops.
+- **4-Step AlphaFold Mechanism:** Plain-English cards with everyday analogies covering Evolutionary Clues (MSA), Pairformer Distance Brain, All-Atom Diffusion vs. Rigid Frames, and Self-Grading Confidence (`pLDDT`, `PAE`, `ipTM`).
+- **AF2 vs. AF3 vs. Boltz-2 Cheat Sheet & Prediction Troubleshooter:** Quickly diagnose common visual artifacts (*Blue Domains + White PAE*, *Orange Spaghetti Ribbon*, *Disordered Tail ipTM Dilution*, and *Low pLDDT Everywhere*).
+- **Plain English / Expert Toggle** on the Explorer page lets beginners view friendly metric labels (`Partner Fit Score`, `Packing Wobble`, `Docking Trust`) alongside exact scientific scores.
+
+---
+
 ### Quick Keyboard Navigation
 
 - Press **`⌘K`** (macOS) or **`Ctrl+K`** (Windows/Linux) anywhere to open the **Spotlight Quick Jump** palette — switch modules, load KRAS G12D / LRP4 / PD-1·PD-L1 structures, jump to clinical triage presets, or toggle Dark / Light Studio mode.
