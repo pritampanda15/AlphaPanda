@@ -55,7 +55,7 @@ Create publication-ready multiple sequence alignment figures with secondary stru
    - Explore the curated alignments (**LRP4 / LRP5 / LRP6 YWTD β-Propeller Blades**, **Human Protein Kinase HRD · DFG**, **Serine Protease Catalytic Triad**, and **Sarbecovirus Spike RBD**).
    - Or click **Upload FASTA/Clustal** (`.fasta`, `.fa`, `.aln`, `.clustal`) or **Paste MSA** to load your own alignment live.
 2. **Customize publication styling & tracks:**
-   - Switch between 5 palettes: **Apple Studio**, **ESPript Red**, **ClustalX**, **Hydropathy**, and **Conservation**.
+   - Switch between 5 palettes: **AlphaPanda**, **ESPript Red**, **ClustalX**, **Hydropathy**, and **Conservation**.
    - Toggle **Secondary Structure** (red α-helix spirals & blue β-strand arrows), **Sequence Logo (Bits)** (Shannon information content), and **Conservation Bars**.
    - **Edit secondary structure directly:** click any position along the `Sec. Struct.` ribbon to cycle `α-Helix → β-Strand → Coil`.
    - **Pin mutations or active sites:** click any alignment residue cell to attach a color-coded callout pin (*Mutation*, *Active Site*, or *Conserved Motif*).

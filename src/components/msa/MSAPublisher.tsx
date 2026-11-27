@@ -37,7 +37,7 @@ interface MSAPublisherProps {
 }
 
 const COLOR_SCHEMES: Array<{ value: MSAColorScheme; label: string }> = [
-  { value: 'apple-studio', label: 'Apple Studio' },
+  { value: 'alphapanda', label: 'AlphaPanda' },
   { value: 'espript-red', label: 'ESPript Red' },
   { value: 'clustalx', label: 'ClustalX' },
   { value: 'hydrophobicity', label: 'Hydropathy' },
@@ -59,7 +59,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
   const [pins, setPins] = useState<MSAMutationPin[]>(initialDemo.pins);
   const [motifRegex, setMotifRegex] = useState(initialDemo.motifRegex || '');
 
-  const [scheme, setScheme] = useState<MSAColorScheme>('apple-studio');
+  const [scheme, setScheme] = useState<MSAColorScheme>('alphapanda');
   const [showSS, setShowSS] = useState(true);
   const [showLogo, setShowLogo] = useState(true);
   const [showConservation, setShowConservation] = useState(true);

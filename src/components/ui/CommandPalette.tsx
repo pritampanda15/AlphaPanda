@@ -105,7 +105,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       {
         id: 'toggle-theme',
         group: 'Studio',
-        label: isDark ? 'Switch to Apple Light Studio' : 'Switch to Apple Dark Studio',
+        label: isDark ? 'Switch to AlphaPanda Light' : 'Switch to AlphaPanda Dark',
         sublabel: 'Toggle frosted-glass luminance appearance',
         icon: isDark ? <Sun className="h-4 w-4 text-sky-300" /> : <Moon className="h-4 w-4 text-slate-600" />,
         run: () => onToggleTheme(),

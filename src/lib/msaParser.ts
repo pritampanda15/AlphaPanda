@@ -26,7 +26,7 @@ export interface MSAMutationPin {
 }
 
 export type MSAColorScheme =
-  | 'apple-studio'
+  | 'alphapanda'
   | 'clustalx'
   | 'espript-red'
   | 'hydrophobicity'
