@@ -555,7 +555,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
             className="apple-glass flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-2.5"
           >
             <div className="flex flex-wrap items-center gap-2.5 text-[12.5px]">
-              <span className="h-2 w-2 rounded-full bg-amber-400" />
+              <span className="h-2 w-2 rounded-full bg-sky-400" />
               <span className="font-mono-code font-bold text-[var(--text-primary)]">
                 {selectedPairStats.label}
               </span>

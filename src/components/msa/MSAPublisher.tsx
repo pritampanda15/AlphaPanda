@@ -272,7 +272,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className="apple-button-secondary inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-[12.5px] font-medium"
             >
-              <Upload className="h-3.5 w-3.5 text-indigo-400" />
+              <Upload className="h-3.5 w-3.5 text-sky-400" />
               Upload FASTA/Clustal
             </button>
             <button
@@ -351,7 +351,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
                 onClick={t.toggle}
                 className={`cursor-pointer rounded-full px-3 py-1 text-[11.5px] font-medium transition-all ${
                   t.active
-                    ? 'bg-indigo-500/16 text-indigo-600 dark:text-indigo-300 ring-1 ring-indigo-500/35'
+                    ? 'bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-1 ring-sky-500/35'
                     : 'apple-button-secondary opacity-70'
                 }`}
               >
@@ -368,7 +368,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
                 value={motifRegex}
                 onChange={(e) => setMotifRegex(e.target.value)}
                 placeholder="Highlight motif (e.g. HRD|DFG)"
-                className="font-mono-code w-48 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-1 pr-3 pl-8 text-[11.5px] text-[var(--text-primary)] outline-none focus:border-indigo-500/60"
+                className="font-mono-code w-48 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-1 pr-3 pl-8 text-[11.5px] text-[var(--text-primary)] outline-none focus:border-sky-500/60"
               />
             </div>
 
@@ -431,7 +431,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-              <Pin className="h-3.5 w-3.5 text-indigo-400" />
+              <Pin className="h-3.5 w-3.5 text-sky-400" />
               Annotated Positions
             </span>
             {pins.map((p) => {
@@ -439,8 +439,8 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
                 p.category === 'active-site'
                   ? 'bg-rose-500/14 text-rose-500 ring-rose-500/30'
                   : p.category === 'mutation'
-                    ? 'bg-violet-500/14 text-violet-500 dark:text-violet-300 ring-violet-500/30'
-                    : 'bg-sky-500/14 text-sky-500 ring-sky-500/30';
+                    ? 'bg-sky-500/16 text-sky-600 dark:text-sky-300 ring-sky-500/35'
+                    : 'bg-[var(--bg-subtle)] text-[var(--text-primary)] ring-[var(--border-strong)]';
               return (
                 <span
                   key={p.id}
@@ -473,9 +473,9 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               onSubmit={handleAddPin}
-              className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl border border-indigo-500/30 bg-indigo-500/8 p-3"
+              className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl border border-sky-500/30 bg-sky-500/8 p-3"
             >
-              <span className="font-mono-code text-[12px] font-semibold text-indigo-400">
+              <span className="font-mono-code text-[12px] font-semibold text-sky-400">
                 Col {selectedCol + 1} (Consensus {columns[selectedCol].consensus},{' '}
                 {Math.round(columns[selectedCol].conservation * 100)}%)
               </span>
@@ -541,8 +541,8 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
                         pin.category === 'active-site'
                           ? 'bg-rose-500 text-white'
                           : pin.category === 'mutation'
-                            ? 'bg-violet-500 text-white'
-                            : 'bg-sky-500 text-white';
+                            ? 'bg-sky-500 text-white'
+                            : 'bg-slate-600 text-white';
                       return (
                         <div
                           key={pin.id}
@@ -701,11 +701,11 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
                               title={`${seq.id} · Col ${col.index + 1}: ${aa} (${Math.round(col.conservation * 100)}% conserved, ${col.informationBits} bits)`}
                               className={`font-mono-code flex cursor-pointer items-center justify-center rounded-[4px] text-[12px] font-semibold transition-transform hover:scale-110 hover:z-10 ${
                                 isSelected
-                                  ? 'ring-2 ring-amber-400'
+                                  ? 'ring-2 ring-sky-400'
                                   : isPinned
-                                    ? 'ring-1 ring-violet-500/60'
+                                    ? 'ring-1 ring-sky-500/70'
                                     : isMotif
-                                      ? 'ring-1 ring-sky-400/70'
+                                      ? 'ring-1 ring-sky-400/50'
                                       : ''
                               }`}
                             >

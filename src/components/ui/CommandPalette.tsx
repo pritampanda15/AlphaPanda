@@ -53,7 +53,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         group: 'Modules',
         label: 'MSA & Sequence Conservation Publisher',
         sublabel: 'Secondary structure, WebLogo, motif search & SVG export',
-        icon: <AlignLeft className="h-4 w-4 text-indigo-400" />,
+        icon: <AlignLeft className="h-4 w-4 text-sky-400" />,
         run: () => onSwitchTab('msa'),
       },
       {
@@ -61,7 +61,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         group: 'Modules',
         label: 'Variant / Mutation Triage Cards',
         sublabel: 'UniProt + AlphaFold 3D RSA, Grantham, ClinVar & gnomAD',
-        icon: <ShieldCheck className="h-4 w-4 text-emerald-400" />,
+        icon: <ShieldCheck className="h-4 w-4 text-sky-400" />,
         run: () => onSwitchTab('triage'),
       },
       {
@@ -69,7 +69,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         group: 'Modules',
         label: 'How AI Folding & Diffusion Works',
         sublabel: 'Interactive noise-to-fold diffusion playground & plain-English guide',
-        icon: <GraduationCap className="h-4 w-4 text-amber-400" />,
+        icon: <GraduationCap className="h-4 w-4 text-sky-400" />,
         run: () => onSwitchTab('learn'),
       },
       ...STATIC_GLOBULAR_PRESETS.map((p) => ({
@@ -88,7 +88,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         group: 'Variant Triage Presets' as const,
         label: `${q.label} (${q.uniprotId})`,
         sublabel: q.mutations,
-        icon: <ShieldCheck className="h-4 w-4 text-emerald-400" />,
+        icon: <ShieldCheck className="h-4 w-4 text-sky-400" />,
         run: () => {
           onSwitchTab('triage');
           onLoadTriagePreset(q.uniprotId, q.mutations);
@@ -107,7 +107,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         group: 'Studio',
         label: isDark ? 'Switch to Apple Light Studio' : 'Switch to Apple Dark Studio',
         sublabel: 'Toggle frosted-glass luminance appearance',
-        icon: isDark ? <Sun className="h-4 w-4 text-amber-300" /> : <Moon className="h-4 w-4 text-slate-600" />,
+        icon: isDark ? <Sun className="h-4 w-4 text-sky-300" /> : <Moon className="h-4 w-4 text-slate-600" />,
         run: () => onToggleTheme(),
       },
     ];

@@ -37,7 +37,7 @@ const MECHANISM_STEPS = [
     stepNum: 'Step 2',
     title: 'The Distance Brain (Pairformer)',
     simpleTag: 'Building the 2D Relationship Grid',
-    icon: <Grid2x2 className="h-4 w-4 text-indigo-400" />,
+    icon: <Grid2x2 className="h-4 w-4 text-sky-400" />,
     analogy: 'Like drawing a giant city mileage chart before trying to draw the actual map.',
     summary:
       'A neural network (Evoformer in AF2; streamlined Pairformer in AF3 & Boltz-2) reads the sequence and MSA clues to build a 2D table of every residue pair.',
@@ -50,7 +50,7 @@ const MECHANISM_STEPS = [
     stepNum: 'Step 3',
     title: '3D Sculpting (Diffusion)',
     simpleTag: 'Carving Atoms Out of Noise',
-    icon: <Sparkles className="h-4 w-4 text-emerald-400" />,
+    icon: <Sparkles className="h-4 w-4 text-sky-400" />,
     analogy: 'AF2 snapped rigid Lego bricks together; AF3 & Boltz-2 sculpt marble out of 3D fog.',
     summary:
       'AlphaFold 2 built proteins using rigid amino-acid triangles (so it couldn’t easily handle small-molecule drugs or DNA). AlphaFold 3 & Boltz-2 replaced that with an all-atom Diffusion model.',
@@ -63,7 +63,7 @@ const MECHANISM_STEPS = [
     stepNum: 'Step 4',
     title: 'Self-Grading Homework',
     simpleTag: 'Confidence Head (pLDDT · PAE · ipTM)',
-    icon: <Award className="h-4 w-4 text-amber-400" />,
+    icon: <Award className="h-4 w-4 text-sky-400" />,
     analogy: 'An honest scientist who highlights what they are sure about in blue and guesses in orange.',
     summary:
       'After sculpting the 3D atoms, a separate Confidence Head grades the result from multiple angles so you never have to trust a structure blindly.',
@@ -221,7 +221,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
             className="mt-4 grid grid-cols-1 gap-4 rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] p-4 sm:p-5 lg:grid-cols-12"
           >
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/14 px-2.5 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-300">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/14 px-2.5 py-0.5 text-[11px] font-semibold text-sky-600 dark:text-sky-300">
                 <Lightbulb className="h-3 w-3" />
                 Everyday Analogy
               </div>
@@ -265,7 +265,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
               {
                 name: 'AlphaFold 2 / ColabFold',
                 badge: 'Rigid Amino-Acid Frames',
-                color: 'text-sky-400',
+                color: 'text-[var(--text-primary)]',
                 canFold: 'Proteins & protein-protein multimers',
                 strength: 'Fast, battle-tested, ultra-reliable for single domains & classic protein complexes.',
                 limit: 'Cannot natively fold small-molecule drugs, DNA, RNA, or covalent ligands.',
@@ -273,7 +273,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
               {
                 name: 'AlphaFold 3',
                 badge: 'All-Atom Diffusion',
-                color: 'text-indigo-400',
+                color: 'text-sky-500 dark:text-sky-400',
                 canFold: 'Proteins + DNA + RNA + Ligands + Ions + PTMs',
                 strength: 'Unified diffusion architecture predicts biomolecular complexes across chemistry in one shot.',
                 limit: 'Can occasionally hallucinate confident-looking loops in disordered regions; check PAE!',
@@ -281,7 +281,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
               {
                 name: 'Boltz-2',
                 badge: 'Open Diffusion + Affinity',
-                color: 'text-emerald-400',
+                color: 'text-sky-500 dark:text-sky-400',
                 canFold: 'Proteins + Nucleic Acids + Ligands + Binding Affinity',
                 strength: 'Open-weights biomolecular diffusion model that also estimates ligand binding affinity.',
                 limit: 'Like all diffusion models, run multiple random seeds to confirm interface consistency.',
@@ -311,7 +311,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
         {/* Interactive "Why Does My Structure Look Like This?" Troubleshooter */}
         <GlassCard className="p-5 lg:col-span-6" delay={0.1}>
           <div className="flex items-center gap-2">
-            <Stethoscope className="h-4.5 w-4.5 text-emerald-500" />
+            <Stethoscope className="h-4.5 w-4.5 text-sky-500" />
             <h3 className="text-[17px] font-bold tracking-tight text-[var(--text-primary)]">
               Why Does My Prediction Look Like This?
             </h3>
@@ -330,7 +330,7 @@ export const HowItWorksStudio: React.FC<HowItWorksStudioProps> = ({
                   onClick={() => setSelectedCase(c.id)}
                   className={`cursor-pointer rounded-2xl border p-3 text-left transition-all ${
                     active
-                      ? 'border-emerald-500/50 bg-emerald-500/10'
+                      ? 'border-sky-500/50 bg-sky-500/10'
                       : 'border-[var(--border-hairline)] bg-[var(--bg-subtle)] hover:border-[var(--border-strong)]'
                   }`}
                 >

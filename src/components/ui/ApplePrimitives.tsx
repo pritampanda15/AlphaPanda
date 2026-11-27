@@ -23,8 +23,8 @@ export const AlphaPandaLogo: React.FC<{ size?: number }> = ({ size = 34 }) => (
     <defs>
       <linearGradient id="apGrad" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#64D2FF" />
-        <stop offset="50%" stopColor="#0A84FF" />
-        <stop offset="100%" stopColor="#30D158" />
+        <stop offset="55%" stopColor="#0A84FF" />
+        <stop offset="100%" stopColor="#0066CC" />
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="16" fill="#0B0F1A" />

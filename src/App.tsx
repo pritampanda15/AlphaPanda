@@ -32,7 +32,6 @@ const MODULES: Array<{
   shortLabel: string;
   title: string;
   tagline: string;
-  accentHue: 'blue' | 'indigo' | 'emerald';
   icon: React.ReactNode;
 }> = [
   {
@@ -41,7 +40,6 @@ const MODULES: Array<{
     title: 'AlphaFold3 · ColabFold · Boltz-2 Explorer',
     tagline:
       'Synchronized 3D globular complex viewport, clickable PAE heatmap, segmented confidence breakdown, automated pDockQ / ipTM scoring, and one-click publication figure export.',
-    accentHue: 'blue',
     icon: <Box className="h-3.5 w-3.5" />,
   },
   {
@@ -50,7 +48,6 @@ const MODULES: Array<{
     title: 'Modern MSA & Sequence Conservation Publisher',
     tagline:
       'Crisp vector-grade alignments with editable secondary-structure cartoons, WebLogo information tracks, motif highlighting, mutation pins, and Illustrator-ready SVG export.',
-    accentHue: 'indigo',
     icon: <AlignLeft className="h-3.5 w-3.5" />,
   },
   {
@@ -59,7 +56,6 @@ const MODULES: Array<{
     title: 'Variant & Mutation Structural Triage Cards',
     tagline:
       'Enter any UniProt ID and mutation list for instant buried/exposed 3D context, interactive 3D spotlight, biophysical shift scoring, active-site proximity, and ClinVar / gnomAD links.',
-    accentHue: 'emerald',
     icon: <ShieldCheck className="h-3.5 w-3.5" />,
   },
   {
@@ -68,7 +64,6 @@ const MODULES: Array<{
     title: 'How Diffusion & AlphaFold Work — Simply Explained',
     tagline:
       'Interactive noise-to-fold diffusion simulator, plain-English 4-step walkthrough of MSA, Pairformer, and all-atom diffusion, plus a quick prediction troubleshooter.',
-    accentHue: 'blue',
     icon: <GraduationCap className="h-3.5 w-3.5" />,
   },
 ];
@@ -177,7 +172,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen text-[var(--text-primary)]">
-      <AmbientHelixMotion isDark={isDark} accentHue={activeModule.accentHue} />
+      <AmbientHelixMotion isDark={isDark} />
 
       <CommandPalette
         open={paletteOpen}
@@ -274,7 +269,7 @@ export default function App() {
               className="apple-button-secondary hidden cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] md:inline-flex"
               title="Cite AlphaPanda Studio (BibTeX & Methods)"
             >
-              <BookMarked className="h-3.5 w-3.5 text-indigo-400" />
+              <BookMarked className="h-3.5 w-3.5 text-sky-500" />
               <span>Cite</span>
             </button>
 
@@ -296,7 +291,7 @@ export default function App() {
               aria-label="Toggle dark and light studio appearance"
               className="apple-button-secondary inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full"
             >
-              {isDark ? <Sun className="h-4 w-4 text-amber-300" /> : <Moon className="h-4 w-4 text-slate-700" />}
+              {isDark ? <Sun className="h-4 w-4 text-sky-300" /> : <Moon className="h-4 w-4 text-slate-700" />}
             </button>
           </div>
         </div>

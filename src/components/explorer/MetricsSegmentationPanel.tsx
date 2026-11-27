@@ -388,7 +388,7 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
                     <div className="apple-glass-subtle rounded-2xl p-3.5">
                       <div className="font-semibold text-[var(--text-primary)]">3. Which residues drive binding?</div>
                       <p className="mt-1">
-                        Inspect the <strong className="text-violet-400">Interface Contact Table</strong> below. Prioritize salt bridges, H-bonds, and buried hydrophobic pairs with both low i-PAE (&lt;5 Å) and high local pLDDT (&gt;85) for mutagenesis.
+                        Inspect the <strong className="text-sky-400">Interface Contact Table</strong> below. Prioritize salt bridges, H-bonds, and buried hydrophobic pairs with both low i-PAE (&lt;5 Å) and high local pLDDT (&gt;85) for mutagenesis.
                       </p>
                     </div>
                   </>
@@ -580,11 +580,11 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
         <GlassCard className="flex flex-col gap-3.5 p-5" delay={0.04}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-emerald-500/14 text-emerald-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-sky-500/14 text-sky-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                 <Grid2x2 className="h-4 w-4" />
               </span>
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-emerald-400">
+                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-sky-400">
                   Segment 2 · Relative Error (PAE)
                 </div>
                 <div className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">
@@ -676,11 +676,11 @@ export const MetricsSegmentationPanel: React.FC<MetricsSegmentationPanelProps> =
         <GlassCard className="flex flex-col gap-3.5 p-5" delay={0.08}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-sky-400/14 text-sky-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/15 bg-sky-500/14 text-sky-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
                 <Activity className="h-4 w-4" />
               </span>
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-sky-300">
+                <div className="text-[10px] font-bold uppercase tracking-[0.09em] text-sky-400">
                   Segment 3 · Local Accuracy (pLDDT)
                 </div>
                 <div className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">

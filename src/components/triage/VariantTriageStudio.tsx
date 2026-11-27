@@ -162,7 +162,7 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <StatusPill tone="emerald">
+              <StatusPill tone="blue">
                 <Sparkles className="h-3 w-3" />
                 {profile.source}
               </StatusPill>
@@ -231,7 +231,7 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
                 value={uniprotInput}
                 onChange={(e) => setUniprotInput(e.target.value)}
                 placeholder="e.g. P04637"
-                className="font-mono-code w-full rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-2.5 pr-3 pl-9 text-[13.5px] font-semibold text-[var(--text-primary)] outline-none focus:border-emerald-500/60"
+                className="font-mono-code w-full rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] py-2.5 pr-3 pl-9 text-[13.5px] font-semibold text-[var(--text-primary)] outline-none focus:border-sky-500/60"
               />
             </div>
           </div>
@@ -245,7 +245,7 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
               value={mutationInput}
               onChange={(e) => setMutationInput(e.target.value)}
               placeholder="e.g. R175H, Y220C, R248Q, R273H"
-              className="font-mono-code w-full rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3.5 py-2.5 text-[13.5px] text-[var(--text-primary)] outline-none focus:border-emerald-500/60"
+              className="font-mono-code w-full rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3.5 py-2.5 text-[13.5px] text-[var(--text-primary)] outline-none focus:border-sky-500/60"
             />
           </div>
 
@@ -325,10 +325,10 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
                   Math.min(100 - leftPct, ((d.end - d.start + 1) / Math.max(1, profile.length)) * 100)
                 );
                 const colors = [
-                  'from-sky-500/85 to-indigo-500/85',
-                  'from-emerald-500/85 to-teal-500/85',
-                  'from-violet-500/85 to-fuchsia-500/85',
-                  'from-amber-500/85 to-orange-500/85',
+                  'from-sky-500/85 to-blue-600/85',
+                  'from-slate-500/80 to-slate-600/80',
+                  'from-sky-600/85 to-blue-700/85',
+                  'from-slate-600/80 to-slate-700/80',
                 ];
                 return (
                   <div
@@ -553,7 +553,7 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
                 {/* Physicochemical Shift */}
                 <div className="apple-glass-subtle rounded-2xl p-3">
                   <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-                    <Flame className="h-3.5 w-3.5 text-amber-400" />
+                    <Flame className="h-3.5 w-3.5 text-sky-400" />
                     Biophysical Shift
                   </div>
                   <div className="mt-1.5 space-y-1 text-[11.5px]">
