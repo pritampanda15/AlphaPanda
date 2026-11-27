@@ -145,13 +145,17 @@
   opacity: 1;
 }
 
-/* Floating visionOS Capsule Dock */
+/* Floating visionOS Capsule Dock (high-legibility frosted glass when content scrolls beneath) */
 .apple-dock {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(42px) saturate(210%);
-  -webkit-backdrop-filter: blur(42px) saturate(210%);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(48px) saturate(210%);
+  -webkit-backdrop-filter: blur(48px) saturate(210%);
   border: 1px solid var(--border-hairline);
   box-shadow: var(--shadow-dock);
+}
+
+.dark .apple-dock {
+  background: rgba(8, 11, 19, 0.84);
 }
 
 /* Recessed Glass Well (for nested metric tiles & code boxes) */
