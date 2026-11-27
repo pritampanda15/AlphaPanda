@@ -119,13 +119,16 @@ export function buildSessionFromDataset(
 }
 
 /**
- * Align a homologous ortholog sequence cleanly onto a reference domain window using a fast k-mer anchor.
+ * Align a homologous ortholog sequence cleanly onto a reference 3D domain window.
+ * Step 1: K-mer offset locates the matching domain slice inside full-length proteins (e.g. 330 aa inside 1905 aa LRP4).
+ * Step 2: Banded Needleman-Wunsch pairwise alignment maps every residue onto refSeq columns
+ *         (handling missing crystal loops / indels accurately with '-' gaps, matching reference length L).
  */
 function extractAlignedWindow(refSeq: string, targetSeq: string): string | null {
   const L = refSeq.length;
   if (L === 0 || targetSeq.length < Math.min(20, L * 0.5)) return null;
 
-  // Vote on best offset using 5-mer matches across the reference sequence
+  // Step 1: Locate approximate domain start offset via 5-mer anchors
   const k = 5;
   const targetIndex = new Map<string, number[]>();
   for (let i = 0; i <= targetSeq.length - k; i++) {
@@ -158,25 +161,89 @@ function extractAlignedWindow(refSeq: string, targetSeq: string): string | null 
     }
   }
 
-  // Require at least 2 k-mer anchor hits (or direct start alignment for very short peptides)
   if (bestVotes < 2 && L > 25) return null;
 
-  const out: string[] = [];
-  let matches = 0;
-  for (let i = 0; i < L; i++) {
-    const idx = i + bestOffset;
-    if (idx >= 0 && idx < targetSeq.length) {
-      const ch = targetSeq[idx];
-      out.push(ch);
-      if (ch === refSeq[i]) matches++;
-    } else {
-      out.push('-');
+  // Extract a slightly padded target slice around bestOffset so local crystal loop indels align seamlessly
+  const pad = 16;
+  const sliceStart = Math.max(0, bestOffset - pad);
+  const sliceEnd = Math.min(targetSeq.length, bestOffset + L + pad);
+  const sub = targetSeq.slice(sliceStart, sliceEnd);
+  const M = sub.length;
+  if (M === 0) return null;
+
+  // Step 2: Semi-global Needleman-Wunsch (free end-gaps in target slice `sub`, anchored to every column of `refSeq`)
+  const NEG_INF = -1e9;
+  const dp = new Int32Array((L + 1) * (M + 1));
+  const trace = new Uint8Array((L + 1) * (M + 1)); // 1=diag, 2=up (gap in target), 3=left (skip extra residue in target)
+  const stride = M + 1;
+
+  for (let i = 1; i <= L; i++) {
+    dp[i * stride] = -4 * i;
+    trace[i * stride] = 2;
+  }
+  // Free leading gap in target `sub` (dp[0][j] = 0)
+  for (let j = 1; j <= M; j++) {
+    dp[j] = 0;
+    trace[j] = 3;
+  }
+
+  for (let i = 1; i <= L; i++) {
+    const rc = refSeq[i - 1];
+    const rowOff = i * stride;
+    const prevOff = (i - 1) * stride;
+    for (let j = 1; j <= M; j++) {
+      const match = rc === sub[j - 1] ? 4 : -1;
+      const diag = dp[prevOff + (j - 1)] + match;
+      const up = dp[prevOff + j] - 4;
+      const left = dp[rowOff + (j - 1)] - 4;
+      if (diag >= up && diag >= left) {
+        dp[rowOff + j] = diag;
+        trace[rowOff + j] = 1;
+      } else if (up >= left) {
+        dp[rowOff + j] = up;
+        trace[rowOff + j] = 2;
+      } else {
+        dp[rowOff + j] = left;
+        trace[rowOff + j] = 3;
+      }
     }
   }
 
-  // Filter out unrelated paralogs (<25% identity)
-  if (matches / L < 0.25) return null;
-  return out.join('');
+  // Free trailing gap in target `sub`: pick best ending j along row L
+  let bestJ = M;
+  let bestScore = NEG_INF;
+  const lastRow = L * stride;
+  for (let j = 0; j <= M; j++) {
+    if (dp[lastRow + j] > bestScore) {
+      bestScore = dp[lastRow + j];
+      bestJ = j;
+    }
+  }
+
+  // Traceback onto exact refSeq column grid (length L)
+  const alignedChars = new Array<string>(L).fill('-');
+  let i = L;
+  let j = bestJ;
+  let matches = 0;
+  while (i > 0) {
+    const move = trace[i * stride + j];
+    if (move === 1 && j > 0) {
+      const ch = sub[j - 1];
+      alignedChars[i - 1] = ch;
+      if (ch === refSeq[i - 1]) matches++;
+      i--;
+      j--;
+    } else if (move === 2 || j === 0) {
+      alignedChars[i - 1] = '-';
+      i--;
+    } else {
+      // Extra insertion in ortholog (e.g. disordered loop missing in crystal PDB): skip cleanly to preserve 3D column grid
+      j--;
+    }
+  }
+
+  if (matches / L < 0.28) return null;
+  return alignedChars.join('');
 }
 
 export interface CarryForwardMSAResult {
