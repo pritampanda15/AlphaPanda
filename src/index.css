@@ -5,12 +5,12 @@
     --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
     --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    /* Apple Liquid Glass — Light Studio Porcelain */
-    --bg-canvas: #edf1f7;
-    --bg-elevated: linear-gradient(155deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.58) 100%);
-    --bg-elevated-solid: rgba(255, 255, 255, 0.92);
-    --bg-well: rgba(15, 23, 42, 0.032);
-    --bg-subtle: rgba(255, 255, 255, 0.48);
+    /* AlphaPanda Liquid Glass — Crisp White Studio */
+    --bg-canvas: #f8fafc;
+    --bg-elevated: linear-gradient(155deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.72) 100%);
+    --bg-elevated-solid: #ffffff;
+    --bg-well: rgba(15, 23, 42, 0.028);
+    --bg-subtle: rgba(255, 255, 255, 0.66);
     --border-hairline: rgba(15, 23, 42, 0.08);
     --border-specular: rgba(255, 255, 255, 0.92);
     --border-strong: rgba(15, 23, 42, 0.16);

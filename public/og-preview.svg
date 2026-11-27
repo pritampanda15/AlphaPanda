@@ -31,17 +31,20 @@
   <!-- Main Glass Frame -->
   <rect x="52" y="48" width="1096" height="534" rx="34" fill="#11141E" fill-opacity="0.72" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5" />
 
-  <!-- AlphaPanda Monogram -->
-  <g transform="translate(96, 94)">
-    <rect width="68" height="68" rx="18" fill="#0B0D14" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" />
-    <circle cx="21" cy="21" r="6.5" fill="#F5F5F7" />
-    <circle cx="47" cy="21" r="6.5" fill="#F5F5F7" />
-    <circle cx="34" cy="37" r="17" fill="#F5F5F7" />
-    <ellipse cx="27" cy="35.5" rx="4.8" ry="5.8" transform="rotate(-14 27 35.5)" fill="#0B0D14" />
-    <ellipse cx="41" cy="35.5" rx="4.8" ry="5.8" transform="rotate(14 41 35.5)" fill="#0B0D14" />
-    <circle cx="28" cy="34.5" r="1.7" fill="url(#accent)" />
-    <circle cx="40" cy="34.5" r="1.7" fill="url(#accent)" />
-    <path d="M28.5 45C31.2 47.6 36.8 47.6 39.5 45" stroke="url(#accent)" stroke-width="3" stroke-linecap="round" />
+  <!-- AlphaPanda Bespoke Logo Mark -->
+  <g transform="translate(96, 90) scale(0.56)">
+    <rect x="6" y="6" width="116" height="116" rx="30" fill="#0A1122" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="2" />
+    <circle cx="38" cy="39" r="12.5" fill="#0B1325" stroke="url(#accent)" stroke-width="3" />
+    <circle cx="90" cy="39" r="12.5" fill="#0B1325" stroke="url(#accent)" stroke-width="3" />
+    <path d="M64 35 C 86.5 35, 99 51, 99 70.5 C 99 90.5, 84 102, 64 102 C 44 102, 29 90.5, 29 70.5 C 29 51, 41.5 35, 64 35 Z" fill="#F5F7FB" />
+    <ellipse cx="48.5" cy="66.5" rx="9.5" ry="12" transform="rotate(-16 48.5 66.5)" fill="#0A1122" />
+    <ellipse cx="79.5" cy="66.5" rx="9.5" ry="12" transform="rotate(16 79.5 66.5)" fill="#0A1122" />
+    <circle cx="50.5" cy="64" r="3.4" fill="url(#accent)" />
+    <circle cx="77.5" cy="64" r="3.4" fill="url(#accent)" />
+    <circle cx="51.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+    <circle cx="78.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+    <path d="M59.2 77.2 C 59.2 75.5, 68.8 75.5, 68.8 77.2 C 68.8 79.5, 65.8 82.2, 64 82.2 C 62.2 82.2, 59.2 79.5, 59.2 77.2 Z" fill="#0A1122" />
+    <path d="M46 89.5 C 51 95.5, 58.5 95.5, 64 89.5 C 69.5 83.5, 77 83.5, 82 89.5" stroke="url(#accent)" stroke-width="4.6" stroke-linecap="round" fill="none" />
   </g>
 
   <!-- Brand Header -->

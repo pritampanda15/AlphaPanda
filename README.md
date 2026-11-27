@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./public/alphapanda-logo.svg" alt="AlphaPanda Studio Logo" width="88" height="88" />
+</p>
+
 # AlphaPanda Studio
 
 > **Structural Biology & AI Folding Workstation** — Synchronized 3D Confidence & Interface Explorer, Modern Vector MSA Conservation Publisher, and 3D Variant Structural Triage Cards.

@@ -91,7 +91,7 @@ export default function App() {
   const initial = useRef(readInitialDeepLink()).current;
 
   const [activeTab, setActiveTab] = useState<ModuleId>(initial.tab);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [citeOpen, setCiteOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <!-- Deep Obsidian-Sapphire Glass Squircle Backdrop (pops crisply on white & dark UIs) -->
+    <linearGradient id="ap-shell" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#13203A" />
+      <stop offset="48%" stop-color="#0A1122" />
+      <stop offset="100%" stop-color="#050811" />
+    </linearGradient>
+    <!-- Subtle Top Specular Glass Rim -->
+    <linearGradient id="ap-rim" x1="64" y1="4" x2="64" y2="124" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.34" />
+      <stop offset="40%" stop-color="#64D2FF" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#0A84FF" stop-opacity="0.06" />
+    </linearGradient>
+    <!-- Soft Internal Sapphire Glow -->
+    <radialGradient id="ap-aura" cx="64" cy="36" r="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0A84FF" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#0A84FF" stop-opacity="0" />
+    </radialGradient>
+    <!-- Pearl White Panda Sculptural Fill -->
+    <linearGradient id="ap-pearl" x1="64" y1="28" x2="64" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E4EEFA" />
+    </linearGradient>
+    <!-- Arctic Sapphire Folded Alpha-Helix Ribbon -->
+    <linearGradient id="ap-ribbon" x1="26" y1="30" x2="102" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#64D2FF" />
+      <stop offset="52%" stop-color="#0A84FF" />
+      <stop offset="100%" stop-color="#0055CC" />
+    </linearGradient>
+  </defs>
+
+  <!-- Apple-style Squircle App Tile -->
+  <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#ap-shell)" />
+  <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#ap-aura)" />
+  <rect x="7" y="7" width="114" height="114" rx="29" stroke="url(#ap-rim)" stroke-width="2" />
+
+  <!-- Subtle Orbital Protein Fold Ring -->
+  <path
+    d="M24 74 C 24 38, 104 38, 104 74"
+    stroke="url(#ap-ribbon)"
+    stroke-width="2.2"
+    stroke-opacity="0.32"
+    stroke-linecap="round"
+  />
+
+  <!-- Sculptural Geometric Panda Ears -->
+  <circle cx="38" cy="39" r="12.5" fill="#0B1325" stroke="url(#ap-ribbon)" stroke-width="2.6" />
+  <circle cx="90" cy="39" r="12.5" fill="#0B1325" stroke="url(#ap-ribbon)" stroke-width="2.6" />
+  <circle cx="38" cy="39" r="5" fill="url(#ap-ribbon)" fill-opacity="0.35" />
+  <circle cx="90" cy="39" r="5" fill="url(#ap-ribbon)" fill-opacity="0.35" />
+
+  <!-- Clean Geometric Panda Head -->
+  <path
+    d="M64 35 C 86.5 35, 99 51, 99 70.5 C 99 90.5, 84 102, 64 102 C 44 102, 29 90.5, 29 70.5 C 29 51, 41.5 35, 64 35 Z"
+    fill="url(#ap-pearl)"
+  />
+
+  <!-- Precision Tilted Eye Patches -->
+  <ellipse cx="48.5" cy="66.5" rx="9.5" ry="12" transform="rotate(-16 48.5 66.5)" fill="#0A1122" />
+  <ellipse cx="79.5" cy="66.5" rx="9.5" ry="12" transform="rotate(16 79.5 66.5)" fill="#0A1122" />
+
+  <!-- Luminous Sapphire Eye Nodes (Atomic Coordinate Glint) -->
+  <circle cx="50.5" cy="64" r="3.4" fill="url(#ap-ribbon)" />
+  <circle cx="77.5" cy="64" r="3.4" fill="url(#ap-ribbon)" />
+  <circle cx="51.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+  <circle cx="78.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+
+  <!-- Minimalist Geometric Nose -->
+  <path
+    d="M59.2 77.2 C 59.2 75.5, 68.8 75.5, 68.8 77.2 C 68.8 79.5, 65.8 82.2, 64 82.2 C 62.2 82.2, 59.2 79.5, 59.2 77.2 Z"
+    fill="#0A1122"
+  />
+
+  <!-- Signature Folded Alpha-Helix Ribbon Wave (α motif at base of panda chin) -->
+  <path
+    d="M46 89.5 C 51 95.5, 58.5 95.5, 64 89.5 C 69.5 83.5, 77 83.5, 82 89.5"
+    stroke="url(#ap-ribbon)"
+    stroke-width="4.4"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <!-- Terminal Backbone CA Nodes -->
+  <circle cx="46" cy="89.5" r="2.6" fill="#64D2FF" />
+  <circle cx="82" cy="89.5" r="2.6" fill="#0A84FF" />
+</svg>

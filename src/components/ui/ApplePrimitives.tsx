@@ -10,33 +10,61 @@ export const APPLE_SPRING = {
 
 export const APPLE_EASE = [0.22, 1, 0.36, 1] as const;
 
-export const AlphaPandaLogo: React.FC<{ size?: number }> = ({ size = 34 }) => (
+export const AlphaPandaLogo: React.FC<{ size?: number }> = ({ size = 36 }) => (
   <motion.svg
     width={size}
     height={size}
-    viewBox="0 0 64 64"
+    viewBox="0 0 128 128"
     fill="none"
     whileHover={{ scale: 1.06, rotate: -2 }}
     transition={APPLE_SPRING}
-    className="shrink-0 drop-shadow-[0_4px_12px_rgba(10,132,255,0.28)]"
+    className="shrink-0 drop-shadow-[0_6px_14px_rgba(10,132,255,0.22)]"
   >
     <defs>
-      <linearGradient id="apGrad" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <linearGradient id="ap-shell" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#13203A" />
+        <stop offset="48%" stopColor="#0A1122" />
+        <stop offset="100%" stopColor="#050811" />
+      </linearGradient>
+      <linearGradient id="ap-rim" x1="64" y1="4" x2="64" y2="124" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.34" />
+        <stop offset="40%" stopColor="#64D2FF" stopOpacity="0.15" />
+        <stop offset="100%" stopColor="#0A84FF" stopOpacity="0.06" />
+      </linearGradient>
+      <radialGradient id="ap-aura" cx="64" cy="36" r="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#0A84FF" stopOpacity="0.32" />
+        <stop offset="100%" stopColor="#0A84FF" stopOpacity="0" />
+      </radialGradient>
+      <linearGradient id="ap-pearl" x1="64" y1="28" x2="64" y2="104" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFFFFF" />
+        <stop offset="100%" stopColor="#E4EEFA" />
+      </linearGradient>
+      <linearGradient id="ap-ribbon" x1="26" y1="30" x2="102" y2="104" gradientUnits="userSpaceOnUse">
         <stop offset="0%" stopColor="#64D2FF" />
-        <stop offset="55%" stopColor="#0A84FF" />
-        <stop offset="100%" stopColor="#0066CC" />
+        <stop offset="52%" stopColor="#0A84FF" />
+        <stop offset="100%" stopColor="#0055CC" />
       </linearGradient>
     </defs>
-    <rect x="4" y="4" width="56" height="56" rx="16" fill="#0B0F1A" />
-    <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="15.25" stroke="rgba(255,255,255,0.24)" strokeWidth="1.5" />
-    <circle cx="20" cy="20" r="6" fill="#F5F7FB" />
-    <circle cx="44" cy="20" r="6" fill="#F5F7FB" />
-    <circle cx="32" cy="35" r="16" fill="#F5F7FB" />
-    <ellipse cx="25.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(-14 25.5 33.5)" fill="#0B0F1A" />
-    <ellipse cx="38.5" cy="33.5" rx="4.5" ry="5.5" transform="rotate(14 38.5 33.5)" fill="#0B0F1A" />
-    <circle cx="26.5" cy="32.5" r="1.6" fill="url(#apGrad)" />
-    <circle cx="37.5" cy="32.5" r="1.6" fill="url(#apGrad)" />
-    <path d="M27 42.5C29.5 45 34.5 45 37 42.5" stroke="url(#apGrad)" strokeWidth="2.8" strokeLinecap="round" />
+
+    <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#ap-shell)" />
+    <rect x="6" y="6" width="116" height="116" rx="30" fill="url(#ap-aura)" />
+    <rect x="7" y="7" width="114" height="114" rx="29" stroke="url(#ap-rim)" strokeWidth="2" />
+    <path d="M24 74 C 24 38, 104 38, 104 74" stroke="url(#ap-ribbon)" strokeWidth="2.2" strokeOpacity="0.32" strokeLinecap="round" />
+    <circle cx="38" cy="39" r="12.5" fill="#0B1325" stroke="url(#ap-ribbon)" strokeWidth="2.8" />
+    <circle cx="90" cy="39" r="12.5" fill="#0B1325" stroke="url(#ap-ribbon)" strokeWidth="2.8" />
+    <circle cx="38" cy="39" r="5" fill="url(#ap-ribbon)" fillOpacity="0.35" />
+    <circle cx="90" cy="39" r="5" fill="url(#ap-ribbon)" fillOpacity="0.35" />
+    <path d="M64 35 C 86.5 35, 99 51, 99 70.5 C 99 90.5, 84 102, 64 102 C 44 102, 29 90.5, 29 70.5 C 29 51, 41.5 35, 64 35 Z" fill="url(#ap-pearl)" />
+    <ellipse cx="48.5" cy="66.5" rx="9.5" ry="12" transform="rotate(-16 48.5 66.5)" fill="#0A1122" />
+    <ellipse cx="79.5" cy="66.5" rx="9.5" ry="12" transform="rotate(16 79.5 66.5)" fill="#0A1122" />
+    <circle cx="50.5" cy="64" r="3.4" fill="url(#ap-ribbon)" />
+    <circle cx="77.5" cy="64" r="3.4" fill="url(#ap-ribbon)" />
+    <circle cx="51.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+    <circle cx="78.6" cy="62.8" r="1.2" fill="#FFFFFF" />
+    <path d="M59.2 77.2 C 59.2 75.5, 68.8 75.5, 68.8 77.2 C 68.8 79.5, 65.8 82.2, 64 82.2 C 62.2 82.2, 59.2 79.5, 59.2 77.2 Z" fill="#0A1122" />
+    <path d="M46 89.5 C 51 95.5, 58.5 95.5, 64 89.5 C 69.5 83.5, 77 83.5, 82 89.5" stroke="url(#ap-ribbon)" strokeWidth="4.6" strokeLinecap="round" fill="none" />
+    <circle cx="46" cy="89.5" r="2.6" fill="#64D2FF" />
+    <circle cx="82" cy="89.5" r="2.6" fill="#0A84FF" />
   </motion.svg>
 );
 
