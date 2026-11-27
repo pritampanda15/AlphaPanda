@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload,
@@ -13,6 +13,8 @@ import {
   Plus,
   Copy,
   Check,
+  Link2,
+  Loader2,
 } from 'lucide-react';
 import {
   DEMO_MSA_DATASETS,
@@ -27,6 +29,10 @@ import {
   type MSADataset,
   type MSAMutationPin,
 } from '../../lib/msaParser';
+import {
+  buildCarryForwardMSA,
+  type ActiveProteinSession,
+} from '../../lib/proteinSession';
 import { downloadSvgAsPng, downloadTextFile } from '../../lib/figureExport';
 import { GlassCard, SegmentedControl, StatusPill, APPLE_EASE } from '../ui/ApplePrimitives';
 
@@ -34,6 +40,9 @@ interface MSAPublisherProps {
   isDark: boolean;
   initialPresetId?: string | null;
   onPresetChange?: (presetId: string) => void;
+  activeSession?: ActiveProteinSession | null;
+  syncedSessionKey?: string | null;
+  onSessionSynced?: (key: string) => void;
 }
 
 const COLOR_SCHEMES: Array<{ value: MSAColorScheme; label: string }> = [
@@ -48,6 +57,9 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
   isDark,
   initialPresetId,
   onPresetChange,
+  activeSession,
+  syncedSessionKey,
+  onSessionSynced,
 }) => {
   const initialDemo =
     DEMO_MSA_DATASETS.find((d) => d.id === initialPresetId) ?? DEMO_MSA_DATASETS[0];
@@ -58,6 +70,55 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
   const [ssTrack, setSsTrack] = useState(initialDemo.secondaryStructure);
   const [pins, setPins] = useState<MSAMutationPin[]>(initialDemo.pins);
   const [motifRegex, setMotifRegex] = useState(initialDemo.motifRegex || '');
+  const [syncingFromExplorer, setSyncingFromExplorer] = useState(false);
+  const [carriedLabel, setCarriedLabel] = useState<string | null>(null);
+
+  const applyCarriedSession = async (session: ActiveProteinSession) => {
+    setSyncingFromExplorer(true);
+    try {
+      // If it matches a curated rich alignment (like LRP4) AND came from preset, load curated or build live orthologs
+      if (session.source === 'preset' && session.matchedMsaPresetId) {
+        const matched = DEMO_MSA_DATASETS.find((d) => d.id === session.matchedMsaPresetId);
+        if (matched) {
+          setActivePresetId(matched.id);
+          setTitle(matched.title);
+          setSubtitle(matched.subtitle);
+          setRawText(matched.rawText);
+          setSsTrack(matched.secondaryStructure);
+          setPins(matched.pins);
+          setMotifRegex(matched.motifRegex || '');
+          setCarriedLabel(`${session.name} (Synced from Explorer)`);
+          onSessionSynced?.(session.sessionKey);
+          return;
+        }
+      }
+
+      const built = await buildCarryForwardMSA(session);
+      setActivePresetId('carried-session');
+      setTitle(built.title);
+      setSubtitle(built.subtitle);
+      setRawText(built.rawFasta);
+      setSsTrack(built.secondaryStructure);
+      setPins(built.pins);
+      setMotifRegex('');
+      setSelectedCol(null);
+      setCarriedLabel(
+        `${session.name}${built.orthologCount > 0 ? ` · ${built.orthologCount} live UniProt orthologs` : ' · 3D structure sequence'}`
+      );
+      onSessionSynced?.(session.sessionKey);
+    } finally {
+      setSyncingFromExplorer(false);
+    }
+  };
+
+  // Automatically carry forward any active protein from Explorer when switching to MSA
+  useEffect(() => {
+    if (!activeSession) return;
+    if (syncedSessionKey === activeSession.sessionKey && activePresetId === 'carried-session') return;
+    if (syncedSessionKey !== activeSession.sessionKey) {
+      applyCarriedSession(activeSession);
+    }
+  }, [activeSession?.sessionKey]);
 
   const [scheme, setScheme] = useState<MSAColorScheme>('alphapanda');
   const [showSS, setShowSS] = useState(true);
@@ -155,6 +216,7 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
     setPins(preset.pins);
     setMotifRegex(preset.motifRegex || '');
     setSelectedCol(null);
+    setCarriedLabel(null);
     onPresetChange?.(preset.id);
   };
 
@@ -243,6 +305,18 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
               <StatusPill tone="emerald">
                 {strictlyConservedCount} Invariant · {meanConservation}% Mean Identity
               </StatusPill>
+              {syncingFromExplorer && (
+                <StatusPill tone="blue">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Syncing orthologs from Explorer…
+                </StatusPill>
+              )}
+              {!syncingFromExplorer && carriedLabel && (
+                <StatusPill tone="blue">
+                  <Link2 className="h-3 w-3" />
+                  Synced: {carriedLabel}
+                </StatusPill>
+              )}
             </div>
             <h2 className="mt-2 text-[22px] font-bold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[26px]">
               {title}
@@ -307,6 +381,21 @@ export const MSAPublisher: React.FC<MSAPublisherProps> = ({
             <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
               Alignments
             </span>
+            {activeSession && (
+              <button
+                type="button"
+                onClick={() => applyCarriedSession(activeSession)}
+                className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-all ${
+                  activePresetId === 'carried-session'
+                    ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)] shadow-sm'
+                    : 'apple-button-secondary text-sky-600 dark:text-sky-400'
+                }`}
+                title="Re-sync alignment from active Explorer 3D structure"
+              >
+                <Link2 className="h-3 w-3" />
+                Explorer: {activeSession.geneName || activeSession.pdbId || activeSession.name.slice(0, 18)}
+              </button>
+            )}
             {DEMO_MSA_DATASETS.map((preset) => (
               <button
                 key={preset.id}

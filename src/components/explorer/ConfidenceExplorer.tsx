@@ -15,6 +15,7 @@ import {
   X,
   Flame,
   FileJson,
+  ArrowRight,
 } from 'lucide-react';
 import {
   STATIC_GLOBULAR_PRESETS,
@@ -26,6 +27,10 @@ import {
   type ParsedResidue,
   type StructureDataset,
 } from '../../lib/structureParser';
+import {
+  buildSessionFromDataset,
+  type ActiveProteinSession,
+} from '../../lib/proteinSession';
 import {
   buildPublicationFigureSVG,
   downloadSvgAsPng,
@@ -39,24 +44,32 @@ import { MetricsSegmentationPanel } from './MetricsSegmentationPanel';
 
 interface ConfidenceExplorerProps {
   isDark: boolean;
+  initialDataset?: StructureDataset | null;
   requestedPresetId?: string | null;
   requestedLiveId?: string | null;
   onPresetHandled?: () => void;
   onStateChange?: (state: { preset?: string; liveId?: string }) => void;
   onOpenHowItWorks?: () => void;
+  onSessionUpdate?: (session: ActiveProteinSession, dataset: StructureDataset) => void;
+  onCarryToModule?: (target: 'msa' | 'triage') => void;
 }
 
 export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
   isDark,
+  initialDataset,
   requestedPresetId,
   requestedLiveId,
   onPresetHandled,
   onStateChange,
   onOpenHowItWorks,
+  onSessionUpdate,
+  onCarryToModule,
 }) => {
-  const [dataset, setDataset] = useState<StructureDataset | null>(null);
-  const [activePresetId, setActivePresetId] = useState<string>(STATIC_GLOBULAR_PRESETS[0].id);
-  const [loadingStruct, setLoadingStruct] = useState<boolean>(true);
+  const [dataset, setDataset] = useState<StructureDataset | null>(initialDataset ?? null);
+  const [activePresetId, setActivePresetId] = useState<string>(
+    initialDataset?.id ?? STATIC_GLOBULAR_PRESETS[0].id
+  );
+  const [loadingStruct, setLoadingStruct] = useState<boolean>(!initialDataset);
   const [selectedPair, setSelectedPair] = useState<{ a: ParsedResidue; b?: ParsedResidue } | null>(null);
   const [cutoff, setCutoff] = useState(8.0);
   const [bondFilter, setBondFilter] = useState<string>('ALL');
@@ -80,6 +93,7 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
       setBondFilter('ALL');
       setCutoff(8.0);
       onStateChange?.({ preset: presetId });
+      onSessionUpdate?.(buildSessionFromDataset(ds, 'preset'), ds);
       // For KRAS G12D monomer, highlight oncogenic Asp12 by default; otherwise top interface contact
       if (presetId === 'kras-g12d-domain') {
         const asp12 = ds.residues.find((r) => r.resSeq === 12);
@@ -107,9 +121,10 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
       setBondFilter('ALL');
       setCutoff(8.0);
       onStateChange?.({ liveId: clean.toUpperCase() });
+      onSessionUpdate?.(buildSessionFromDataset(ds, 'live-fetch'), ds);
       setSelectedPair(ds.contacts[0] ? { a: ds.contacts[0].resA, b: ds.contacts[0].resB } : null);
       setUploadNotice(
-        `Fetched live ${ds.sourceEngine} structure: ${ds.residues.length} aa across ${ds.chains.length} chain(s)`
+        `Fetched live ${ds.sourceEngine} structure (${ds.residues.length} aa${ds.uniprotId ? ` · UniProt ${ds.uniprotId}` : ''}) — automatically carried forward to MSA & Variant Triage!`
       );
     } catch (err) {
       setUploadNotice(err instanceof Error ? err.message : 'Could not fetch structure ID.');
@@ -212,11 +227,12 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
 
       setDataset(built);
       setActivePresetId('custom-upload');
+      onSessionUpdate?.(buildSessionFromDataset(built, 'upload'), built);
       setSelectedPair(
         built.contacts[0] ? { a: built.contacts[0].resA, b: built.contacts[0].resB } : null
       );
       setUploadNotice(
-        `Loaded ${built.residues.length} residues across ${built.chains.length} chain(s) · Detected ${built.sourceEngine}`
+        `Loaded ${built.residues.length} residues across ${built.chains.length} chain(s) · Detected ${built.sourceEngine} — carried forward to MSA & Variant Triage!`
       );
     } catch (err) {
       setUploadNotice(
@@ -433,6 +449,28 @@ export const ConfidenceExplorer: React.FC<ConfidenceExplorerProps> = ({
               <Table2 className="h-3.5 w-3.5" />
               CSV
             </button>
+            {onCarryToModule && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onCarryToModule('msa')}
+                  className="apple-button-secondary inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-2 text-[12px] font-semibold text-sky-600 dark:text-sky-400"
+                  title="Carry this protein directly into MSA Publisher"
+                >
+                  MSA
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onCarryToModule('triage')}
+                  className="apple-button-secondary inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-2 text-[12px] font-semibold text-sky-600 dark:text-sky-400"
+                  title="Carry this protein & hotspots directly into Variant Triage"
+                >
+                  Triage
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </>
+            )}
           </div>
         </div>
 

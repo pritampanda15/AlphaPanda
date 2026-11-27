@@ -13,6 +13,7 @@ import {
   Loader2,
   Database,
   CheckCircle2,
+  Link2,
 } from 'lucide-react';
 import {
   CURATED_PROTEIN_PRESETS,
@@ -25,6 +26,10 @@ import {
   type ProteinProfile,
   type VariantTriageResult,
 } from '../../lib/variantTriage';
+import {
+  buildProfileFromSession,
+  type ActiveProteinSession,
+} from '../../lib/proteinSession';
 import { plddtColor } from '../../lib/aminoAcids';
 import { downloadSvgAsPng, downloadTextFile } from '../../lib/figureExport';
 import { GlassCard, StatusPill, APPLE_EASE } from '../ui/ApplePrimitives';
@@ -35,6 +40,9 @@ interface VariantTriageStudioProps {
   requestedPreset?: { uniprotId: string; mutations: string } | null;
   onPresetHandled?: () => void;
   onStateChange?: (state: { uniprotId: string; mutations: string }) => void;
+  activeSession?: ActiveProteinSession | null;
+  syncedSessionKey?: string | null;
+  onSessionSynced?: (key: string) => void;
 }
 
 export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
@@ -42,6 +50,9 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
   requestedPreset,
   onPresetHandled,
   onStateChange,
+  activeSession,
+  syncedSessionKey,
+  onSessionSynced,
 }) => {
   const [uniprotInput, setUniprotInput] = useState(requestedPreset?.uniprotId || 'P04637');
   const [mutationInput, setMutationInput] = useState(
@@ -54,6 +65,46 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [focusedMutation, setFocusedMutation] = useState<string | null>(null);
+  const [carriedFromExplorer, setCarriedFromExplorer] = useState<string | null>(null);
+
+  const applyCarriedSession = async (session: ActiveProteinSession) => {
+    setErrorMsg(null);
+    setFocusedMutation(null);
+    const localProfile = buildProfileFromSession(session);
+    const mutStr = session.hotspotMutations.join(', ');
+    setUniprotInput(session.uniprotId || session.pdbId || 'CUSTOM-3D');
+    setMutationInput(mutStr);
+    setProfile(localProfile);
+    setCarriedFromExplorer(session.name);
+    onSessionSynced?.(session.sessionKey);
+
+    // If this protein has a UniProt ID not in our local curated cache, enrich live from UniProtKB
+    // while keeping the already-loaded 3D coordinates for instant 3D Spotlight!
+    if (session.uniprotId && !CURATED_PROTEIN_PRESETS[session.uniprotId]) {
+      setLoading(true);
+      try {
+        const live = await fetchLiveProteinProfile(session.uniprotId);
+        setProfile({
+          ...live,
+          rawPdbText: live.rawPdbText || localProfile.rawPdbText,
+          residues3D: live.residues3D?.length ? live.residues3D : localProfile.residues3D,
+          staticPdbChain: live.rawPdbText ? undefined : localProfile.staticPdbChain,
+        });
+      } catch {
+        // Keep the instant 3D structure profile cleanly if offline
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Automatically carry forward active Explorer protein into Variant Triage
+  useEffect(() => {
+    if (!activeSession || requestedPreset) return;
+    if (syncedSessionKey !== activeSession.sessionKey) {
+      applyCarriedSession(activeSession);
+    }
+  }, [activeSession?.sessionKey, requestedPreset]);
 
   useEffect(() => {
     onStateChange?.({ uniprotId: uniprotInput.trim().toUpperCase(), mutations: mutationInput.trim() });
@@ -120,6 +171,7 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
     setMutationInput(preset.mutations);
     setErrorMsg(null);
     setFocusedMutation(null);
+    setCarriedFromExplorer(null);
     if (CURATED_PROTEIN_PRESETS[preset.uniprotId]) {
       setProfile(CURATED_PROTEIN_PRESETS[preset.uniprotId]);
     }
@@ -169,7 +221,13 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
               {profile.residues3D && (
                 <StatusPill tone="blue">
                   <CheckCircle2 className="h-3 w-3" />
-                  3D AlphaFold RSA Active ({profile.residues3D.length} aa)
+                  3D RSA Active ({profile.residues3D.length} aa)
+                </StatusPill>
+              )}
+              {carriedFromExplorer && (
+                <StatusPill tone="blue">
+                  <Link2 className="h-3 w-3" />
+                  Carried forward from Explorer
                 </StatusPill>
               )}
             </div>
@@ -270,18 +328,33 @@ export const VariantTriageStudio: React.FC<VariantTriageStudioProps> = ({
           </div>
         </form>
 
-        {/* Instant Clinical Presets */}
+        {/* Instant Clinical Presets + Carried-Forward Explorer Button */}
         <div className="mt-3.5 flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
             Clinical Presets
           </span>
+          {activeSession && (
+            <button
+              type="button"
+              onClick={() => applyCarriedSession(activeSession)}
+              className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold transition-all ${
+                carriedFromExplorer
+                  ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)] shadow-sm'
+                  : 'apple-button-secondary text-sky-600 dark:text-sky-400'
+              }`}
+              title="Load active protein & hotspot mutations from Explorer"
+            >
+              <Link2 className="h-3 w-3" />
+              Explorer: {activeSession.geneName || activeSession.pdbId || activeSession.name.slice(0, 18)}
+            </button>
+          )}
           {TRIAGE_PRESET_QUERIES.map((p) => (
             <button
               key={p.uniprotId}
               type="button"
               onClick={() => handlePresetClick(p)}
               className={`cursor-pointer rounded-full px-3 py-1 text-[12px] font-medium transition-all ${
-                profile.uniprotId === p.uniprotId
+                !carriedFromExplorer && profile.uniprotId === p.uniprotId
                   ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)] shadow-sm'
                   : 'apple-button-secondary'
               }`}

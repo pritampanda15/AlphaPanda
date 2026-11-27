@@ -24,6 +24,8 @@ import { ConfidenceExplorer } from './components/explorer/ConfidenceExplorer';
 import { MSAPublisher } from './components/msa/MSAPublisher';
 import { VariantTriageStudio } from './components/triage/VariantTriageStudio';
 import { HowItWorksStudio } from './components/learn/HowItWorksStudio';
+import type { ActiveProteinSession } from './lib/proteinSession';
+import type { StructureDataset } from './lib/structureParser';
 
 type ModuleId = 'explorer' | 'msa' | 'triage' | 'learn';
 
@@ -102,6 +104,12 @@ export default function App() {
     uniprotId: string;
     mutations: string;
   } | null>(initial.triage);
+
+  // Shared Active Protein Session carried forward automatically from Explorer -> MSA & Variant Triage
+  const [activeSession, setActiveSession] = useState<ActiveProteinSession | null>(null);
+  const [cachedDataset, setCachedDataset] = useState<StructureDataset | null>(null);
+  const [syncedMsaKey, setSyncedMsaKey] = useState<string | null>(null);
+  const [syncedTriageKey, setSyncedTriageKey] = useState<string | null>(null);
 
   // Track current view state for shareable URL query sync
   const deepStateRef = useRef<{
@@ -328,6 +336,7 @@ export default function App() {
             {activeTab === 'explorer' && (
               <ConfidenceExplorer
                 isDark={isDark}
+                initialDataset={cachedDataset}
                 requestedPresetId={requestedStructPreset}
                 requestedLiveId={requestedLiveId}
                 onPresetHandled={() => {
@@ -340,6 +349,15 @@ export default function App() {
                   syncUrl('explorer');
                 }}
                 onOpenHowItWorks={() => setActiveTab('learn')}
+                onSessionUpdate={(session, ds) => {
+                  setActiveSession(session);
+                  setCachedDataset(ds);
+                }}
+                onCarryToModule={(target) => {
+                  if (target === 'msa') setSyncedMsaKey(null);
+                  if (target === 'triage') setSyncedTriageKey(null);
+                  setActiveTab(target);
+                }}
               />
             )}
             {activeTab === 'msa' && (
@@ -350,6 +368,9 @@ export default function App() {
                   deepStateRef.current.msaPreset = presetId;
                   syncUrl('msa');
                 }}
+                activeSession={activeSession}
+                syncedSessionKey={syncedMsaKey}
+                onSessionSynced={setSyncedMsaKey}
               />
             )}
             {activeTab === 'triage' && (
@@ -362,6 +383,9 @@ export default function App() {
                   deepStateRef.current.triageMuts = mutations;
                   syncUrl('triage');
                 }}
+                activeSession={activeSession}
+                syncedSessionKey={syncedTriageKey}
+                onSessionSynced={setSyncedTriageKey}
               />
             )}
             {activeTab === 'learn' && (

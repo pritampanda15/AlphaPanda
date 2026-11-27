@@ -62,6 +62,9 @@ export interface StructureDataset {
   subtitle: string;
   sourceEngine: 'AlphaFold3' | 'Boltz-2' | 'ColabFold' | 'RCSB PDB' | 'AlphaFold DB' | 'Custom Upload';
   format: 'pdb' | 'cif';
+  uniprotId?: string;
+  geneName?: string;
+  pdbId?: string;
   rawStructureText: string;
   residues: ParsedResidue[];
   chains: ChainSummary[];
@@ -79,6 +82,9 @@ export interface StaticGlobularPresetMeta {
   pdbPath: string;
   sourceEngine: StructureDataset['sourceEngine'];
   chainLabels: Record<string, string>;
+  uniprotId?: string;
+  geneName?: string;
+  pdbId?: string;
   iptm?: number;
   ptm: number;
   badge: string;
@@ -93,6 +99,9 @@ export const STATIC_GLOBULAR_PRESETS: StaticGlobularPresetMeta[] = [
     pdbPath: './examples/kras-raf1-complex.pdb',
     sourceEngine: 'AlphaFold3',
     chainLabels: { A: 'KRAS GTPase (1–169)', B: 'RAF1 RBD-CRD' },
+    uniprotId: 'P01116',
+    geneName: 'KRAS',
+    pdbId: '6XI7',
     iptm: 0.89,
     ptm: 0.92,
     badge: '295 aa · Complex',
@@ -105,6 +114,9 @@ export const STATIC_GLOBULAR_PRESETS: StaticGlobularPresetMeta[] = [
     pdbPath: './examples/lrp4-agrin-complex.pdb',
     sourceEngine: 'Boltz-2',
     chainLabels: { A: 'LRP4 β1 Propeller (330 aa)', B: 'Agrin LG3 (191 aa)' },
+    uniprotId: 'O75096',
+    geneName: 'LRP4',
+    pdbId: '3V65',
     iptm: 0.87,
     ptm: 0.90,
     badge: '521 aa · β-Propeller',
@@ -117,6 +129,9 @@ export const STATIC_GLOBULAR_PRESETS: StaticGlobularPresetMeta[] = [
     pdbPath: './examples/kras-g12d-domain.pdb',
     sourceEngine: 'AlphaFold3',
     chainLabels: { A: 'KRAS G12D (1–169)' },
+    uniprotId: 'P01116',
+    geneName: 'KRAS',
+    pdbId: '5USJ',
     ptm: 0.94,
     badge: '165 aa · Monomer',
   },
@@ -128,6 +143,9 @@ export const STATIC_GLOBULAR_PRESETS: StaticGlobularPresetMeta[] = [
     pdbPath: './examples/pd1-pdl1-complex.pdb',
     sourceEngine: 'Boltz-2',
     chainLabels: { A: 'PD-L1 IgV', B: 'PD-1 IgV' },
+    uniprotId: 'Q9NZQ7',
+    geneName: 'CD274',
+    pdbId: '4ZQK',
     iptm: 0.85,
     ptm: 0.89,
     badge: '221 aa · IgV Dimer',
@@ -140,6 +158,9 @@ export const STATIC_GLOBULAR_PRESETS: StaticGlobularPresetMeta[] = [
     pdbPath: './examples/mdm2-p53-complex.pdb',
     sourceEngine: 'ColabFold',
     chainLabels: { A: 'MDM2 SWIB', B: 'p53 TAD' },
+    uniprotId: 'Q00987',
+    geneName: 'MDM2',
+    pdbId: '1YCR',
     iptm: 0.78,
     ptm: 0.84,
     badge: '98 aa · Peptide',
@@ -428,6 +449,9 @@ export function buildStructureDataset(params: {
   confidence?: ParsedConfidenceJSON;
   sourceEngine?: StructureDataset['sourceEngine'];
   chainLabels?: Record<string, string>;
+  uniprotId?: string;
+  geneName?: string;
+  pdbId?: string;
   contactCutoff?: number;
 }): StructureDataset {
   const residues =
@@ -611,6 +635,9 @@ export function buildStructureDataset(params: {
     subtitle: params.subtitle,
     sourceEngine: params.sourceEngine ?? params.confidence?.detectedEngine ?? 'Custom Upload',
     format: params.format,
+    uniprotId: params.uniprotId,
+    geneName: params.geneName,
+    pdbId: params.pdbId,
     rawStructureText: params.rawStructureText,
     residues,
     chains,
@@ -660,6 +687,9 @@ export async function loadStaticGlobularPreset(presetId: string): Promise<Struct
     format: 'pdb',
     sourceEngine: meta.sourceEngine,
     chainLabels: meta.chainLabels,
+    uniprotId: meta.uniprotId,
+    geneName: meta.geneName,
+    pdbId: meta.pdbId,
     confidence: {
       iptm: meta.iptm,
       ptm: meta.ptm,
@@ -674,6 +704,7 @@ export async function loadStaticGlobularPreset(presetId: string): Promise<Struct
 /**
  * Fetch ANY real 3D structure directly by 4-char RCSB PDB ID (e.g. 6XI7, 3V65)
  * or UniProt Accession ID (e.g. O75096, P01116) from AlphaFold DB!
+ * Automatically resolves UniProt ID & gene symbol so it carries forward seamlessly into MSA & Variant Triage.
  */
 export async function fetchLiveStructureById(rawId: string): Promise<StructureDataset> {
   const id = rawId.trim().toUpperCase();
@@ -681,9 +712,10 @@ export async function fetchLiveStructureById(rawId: string): Promise<StructureDa
 
   // 4-char PDB code (starts with digit)
   if (/^[0-9][A-Z0-9]{3}$/.test(id)) {
-    const [pdbRes, metaRes] = await Promise.all([
+    const [pdbRes, metaRes, entityRes] = await Promise.all([
       fetch(`https://files.rcsb.org/download/${id}.pdb`),
       fetch(`https://data.rcsb.org/rest/v1/core/entry/${id}`).catch(() => null),
+      fetch(`https://data.rcsb.org/rest/v1/core/polymer_entity/${id}/1`).catch(() => null),
     ]);
     if (!pdbRes.ok) throw new Error(`RCSB PDB entry "${id}" not found (${pdbRes.status}).`);
     const pdbText = await pdbRes.text();
@@ -692,13 +724,24 @@ export async function fetchLiveStructureById(rawId: string): Promise<StructureDa
       const m = await metaRes.json();
       if (m?.struct?.title) title = m.struct.title;
     }
+    let uniprotId: string | undefined;
+    let geneName: string | undefined;
+    if (entityRes && entityRes.ok) {
+      const e = await entityRes.json();
+      uniprotId = e?.rcsb_polymer_entity_container_identifiers?.uniprot_ids?.[0];
+      geneName = e?.rcsb_entity_source_organism?.[0]?.rcsb_gene_name?.[0]?.value;
+    }
+
     const ds = buildStructureDataset({
       id: `pdb-${id.toLowerCase()}`,
-      name: `PDB ${id}`,
+      name: geneName ? `${geneName} (PDB ${id})` : `PDB ${id}`,
       subtitle: title.slice(0, 120),
       rawStructureText: pdbText,
       format: 'pdb',
       sourceEngine: 'RCSB PDB',
+      uniprotId,
+      geneName,
+      pdbId: id,
       contactCutoff: 9.5,
     });
     if (ds.residues.length === 0) throw new Error(`No protein atoms found in PDB ${id}.`);
@@ -725,6 +768,8 @@ export async function fetchLiveStructureById(rawId: string): Promise<StructureDa
     rawStructureText: pdbText,
     format: 'pdb',
     sourceEngine: 'AlphaFold DB',
+    uniprotId: id,
+    geneName: entry.gene || undefined,
     contactCutoff: 9.5,
   });
 }
